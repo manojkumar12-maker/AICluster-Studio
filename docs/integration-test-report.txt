@@ -1,0 +1,48 @@
+AICluster Integration Test Report
+Date: 2026-07-02 00:12:43
+Master: http://localhost:8000
+Passed: 40/40  Failed: 0/40
+
+Results:
+  [PASS] Health endpoint responded
+  [PASS] DB connected connected
+  [PASS] Version present 1.0.0
+  [PASS] HP-01 registered id=dd86404c...
+  [PASS] HP-02 registered id=836fc457...
+  [PASS] HP-03 registered id=60451542...
+  [PASS] HP-04 registered id=b9ba4e4b...
+  [PASS] GET /workers responded
+  [PASS] All 4 workers present got 4
+  [PASS] HP-01 in list 
+  [PASS] HP-02 in list 
+  [PASS] HP-03 in list 
+  [PASS] HP-04 in list 
+  [PASS] HP-01 heartbeats 6 sent
+  [PASS] HP-02 heartbeats 6 sent
+  [PASS] HP-03 heartbeats 6 sent
+  [PASS] HP-04 heartbeats 6 sent
+  [PASS] GET /dashboard responded
+  [PASS] Workers counted total=4
+  [PASS] Workers accounted online=3 busy=1
+  [PASS] CPU avg present cpu=12.2%
+  [PASS] RAM avg present ram=21.4%
+  [PASS] Dashboard fields complete all fields present
+  [PASS] Create job 1 id=fd5d18c8...
+  [PASS] Create job 2 id=abc46db1...
+  [PASS] Create job 3 id=533bc84d...
+  [PASS] List jobs 3 jobs
+  [PASS] At least 3 jobs got 3
+  [PASS] Get job by ID status=queued
+  [PASS] Cancel job cancelled
+  [PASS] Job cancelled cancelled
+  [PASS] Cancel not-found returns 404 
+  [PASS] GET /logs responded
+  [PASS] Logs are list 8 entries
+  [PASS] Log has level INFO
+  [PASS] Log has message 
+  [PASS] Logs filtered by level filtered
+  [PASS] HP-01 stopping for timeout test heartbeats paused
+  [PASS] HP-01 went OFFLINE after timeout status=offline
+  [PASS] Other workers still online ['busy', 'online', 'online']
+
+Overall: PASS

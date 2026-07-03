@@ -1,0 +1,91 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+*.egg
+
+# Node
+node_modules/
+.next/
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE
+.idea/
+*.swp
+*.swo
+.vscode/settings.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/*.log
+logs/*.txt
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Config overrides
+config/production.yaml
+config/development.yaml
+
+# Models
+models/*.bin
+models/*.pt
+models/*.pth
+models/*.onnx
+
+# Build
+dist/
+artifacts/
+temp/
+checksums/
+release/
+*.whl
+*.spec
+*.ico.bak
+
+# Coverage
+coverage/
+.coverage
+*.coverage
+htmlcov/
+
+# Rust / Tauri
+target/
+gen/
+
+# Build system
+build/setup/Output/
+build/setup/payload/
+build/modules/dist/
+build/modules/build/
+
+# Pytest
+.pytest_cache/
+
+# Linters
+.ruff_cache/
+.oxlint_cache/
+.mypy_cache/
+
+# Generated docs
+docs/Images/
+
+# Misc
+*.pid
+*.seed
+*.pid.lock
+nul

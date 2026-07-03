@@ -1,0 +1,11 @@
+{
+  "master_url": "http://localhost:8000",
+  "worker_name": "",
+  "worker_port": 8001,
+  "heartbeat_interval": 5,
+  "poll_interval": 5,
+  "cpu_limit": 25,
+  "ram_limit_gb": 8,
+  "log_level": "INFO",
+  "version": "1.0.0"
+}

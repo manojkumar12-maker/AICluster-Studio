@@ -1,0 +1,23 @@
+[package]
+name = "studio"
+version = "1.2.1"
+description = "AICluster Studio - Visual IDE & Workspace"
+authors = ["AICluster"]
+edition = "2021"
+rust-version = "1.70"
+
+[[bin]]
+name = "AIClusterStudio"
+path = "src/main.rs"
+
+[lib]
+name = "studio_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.0", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

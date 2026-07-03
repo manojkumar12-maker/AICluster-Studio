@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AICluster Dashboard</title>
+<style>
+  :root { --bg: #0f1117; --surface: #1a1d27; --border: #2a2d3a; --text: #e1e4ed; --muted: #8b8fa3; --accent: #6366f1; --green: #22c55e; --blue: #3b82f6; --card: #1e2130; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .header { border-bottom: 1px solid var(--border); padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; background: var(--surface); }
+  .header h1 { font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
+  .header h1 span { color: var(--accent); }
+  .badge { font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: 500; }
+  .badge-active { background: rgba(34,197,94,0.15); color: var(--green); }
+  .badge-api { background: rgba(99,102,241,0.15); color: var(--accent); }
+  .container { max-width: 960px; margin: 0 auto; padding: 2rem; }
+  .status-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; flex: 1; min-width: 180px; }
+  .card h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.5rem; }
+  .card .value { font-size: 1.5rem; font-weight: 700; }
+  .card .sub { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; }
+  .section-title { font-size: 0.85rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 1.5rem 0 0.75rem; }
+  .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+  .app-card { background: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; text-decoration: none; color: var(--text); transition: border-color 0.2s; }
+  .app-card:hover { border-color: var(--accent); }
+  .app-card .icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .app-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
+  .app-card p { font-size: 0.8rem; color: var(--muted); }
+  .row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+  .link { color: var(--accent); text-decoration: none; font-size: 0.85rem; }
+  .link:hover { text-decoration: underline; }
+  footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.8rem; }
+  @media (max-width: 640px) { .container { padding: 1rem; } .card { min-width: 100%; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>◆</span> AICluster</h1>
+  <div class="row">
+    <span class="badge badge-active">v1.2.1</span>
+    <span class="badge badge-api" id="status-badge">Checking…</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="status-row" id="status-row">
+    <div class="card">
+      <h3>Service Status</h3>
+      <div class="value" id="service-status">● Running</div>
+      <div class="sub" id="uptime"></div>
+    </div>
+    <div class="card">
+      <h3>API</h3>
+      <div class="value"><a href="/api/v1/health" class="link" target="_blank">/api/v1</a></div>
+      <div class="sub"><a href="/docs" class="link" target="_blank">Swagger Docs</a> · <a href="/redoc" class="link" target="_blank">ReDoc</a></div>
+    </div>
+    <div class="card">
+      <h3>Workers</h3>
+      <div class="value" id="worker-count">-</div>
+      <div class="sub">registered nodes</div>
+    </div>
+  </div>
+
+  <div class="section-title">Applications</div>
+  <div class="app-grid">
+    <a href="/" class="app-card" onclick="event.preventDefault()">
+      <div class="icon">🖥</div>
+      <h4>Master Server</h4>
+      <p>FastAPI backend · API · WebSocket · Port 8000</p>
+    </a>
+    <a href="/docs" class="app-card" target="_blank">
+      <div class="icon">📖</div>
+      <h4>API Documentation</h4>
+      <p>Swagger UI · Interactive API explorer · OpenAPI 3.1</p>
+    </a>
+    <a href="{studio_url}" class="app-card" id="studio-link">
+      <div class="icon">🎨</div>
+      <h4>AICluster Studio</h4>
+      <p>Visual IDE · Workspaces · Project management</p>
+    </a>
+    <a href="{master_cc_url}" class="app-card" id="mcc-link">
+      <div class="icon">📊</div>
+      <h4>Master Control Center</h4>
+      <p>Desktop dashboard · Cluster monitoring</p>
+    </a>
+    <a href="{worker_cc_url}" class="app-card" id="wcc-link">
+      <div class="icon">⚙</div>
+      <h4>Worker Control Center</h4>
+      <p>Worker management · Resource monitoring</p>
+    </a>
+    <a href="{cli_docs}" class="app-card" id="cli-link">
+      <div class="icon">⌨</div>
+      <h4>CLI</h4>
+      <p><code>aicluster.exe status</code> · Command-line tools</p>
+    </a>
+  </div>
+
+  <div class="section-title">Quick Start</div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:0.75rem;padding:1.25rem;font-size:0.85rem;margin-bottom:1rem;">
+    <p style="margin-bottom:0.5rem;"><strong>CLI:</strong></p>
+    <code style="display:block;padding:0.5rem;background:var(--bg);border-radius:0.5rem;margin-bottom:1rem;">
+    C:\Program Files\AICluster\cli\aicluster.exe status
+    </code>
+    <p style="margin-bottom:0.5rem;"><strong>Health check:</strong></p>
+    <code style="display:block;padding:0.5rem;background:var(--bg);border-radius:0.5rem;">
+    curl http://localhost:8000/api/v1/health
+    </code>
+  </div>
+
+</div>
+
+<footer>
+  AICluster v1.2.1 · Running on <span id="host-addr">localhost:8000</span>
+</footer>
+
+<script>
+const STARTED = new Date();
+
+async function refreshStatus() {
+  try {
+    const res = await fetch('/api/v1/health');
+    const data = await res.json();
+    document.getElementById('service-status').textContent = '● Running';
+    document.getElementById('status-badge').textContent = 'OK';
+    document.getElementById('status-badge').className = 'badge badge-active';
+    const secs = Math.round((new Date() - STARTED) / 1000);
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    document.getElementById('uptime').textContent = 'up ' + m + 'm ' + s + 's';
+  } catch {
+    document.getElementById('service-status').textContent = '● Offline';
+    document.getElementById('status-badge').textContent = 'OFFLINE';
+    document.getElementById('status-badge').className = 'badge';
+  }
+}
+
+refreshStatus();
+setInterval(refreshStatus, 5000);
+</script>
+</body>
+</html>

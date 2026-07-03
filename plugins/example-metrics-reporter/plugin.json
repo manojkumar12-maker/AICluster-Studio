@@ -1,0 +1,13 @@
+{
+  "plugin_id": "example-metrics-reporter",
+  "name": "Example Metrics Reporter",
+  "version": "1.0.0",
+  "author": "AICluster",
+  "description": "Example plugin that reports system metrics on workflow completion",
+  "plugin_type": "metrics",
+  "min_platform_version": "1.0.0",
+  "permissions": ["read_metrics"],
+  "capabilities": ["metrics_reporting"],
+  "hooks": ["on_workflow_finish"],
+  "entry_point": "main.py"
+}
