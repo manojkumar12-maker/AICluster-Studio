@@ -89,3 +89,6 @@ docs/Images/
 *.seed
 *.pid.lock
 nul
+build/modules/build/
+build/modules/dist/
+backend/app/build/
