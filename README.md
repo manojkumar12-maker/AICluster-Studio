@@ -7,7 +7,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/aicluster/aicluster?style=flat&logo=github&color=blue)](https://github.com/aicluster/aicluster/releases)
 [![GitHub Stars](https://img.shields.io/github/stars/aicluster/aicluster?style=flat&logo=github&color=yellow)](https://github.com/aicluster/aicluster/stargazers)
 [![GitHub Issues](https://img.shields.io/github/issues/aicluster/aicluster?style=flat&logo=github&color=red)](https://github.com/aicluster/aicluster/issues)
-[![License](https://img.shields.io/github/license/aicluster/aicluster?style=flat&logo=open-source-initiative&color=brightgreen)](LICENSE)
+[![License](https://img.shields.io/badge/License-All%20Rights%20Reserved-red?style=flat&logo=creative-commons&logoColor=white)](NOTICE.md)
 [![Python](https://img.shields.io/badge/Python-3.12+-blue?style=flat&logo=python&logoColor=white)](https://python.org)
 [![Node](https://img.shields.io/badge/Node-20+-green?style=flat&logo=nodedotjs&logoColor=white)](https://nodejs.org)
 [![Rust](https://img.shields.io/badge/Rust-1.80+-orange?style=flat&logo=rust&logoColor=white)](https://rust-lang.org)
@@ -175,7 +175,7 @@ AICluster/
 ├── VERSION                   # Current version (1.3.0)
 ├── CHANGELOG.md              # Release history
 ├── CONTRIBUTING.md           # Contribution guidelines
-├── LICENSE                   # MIT License
+├── NOTICE.md                 # Copyright notice
 ├── PROJECT_STATE.md          # Project status document
 └── SECURITY.md               # Security policy
 ```
@@ -206,7 +206,7 @@ We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+AICluster is © 2026 Manoj Kumar Mathangi. All rights reserved. See [NOTICE.md](NOTICE.md) for details. A license will be determined in a future release.
 
 ---
 
