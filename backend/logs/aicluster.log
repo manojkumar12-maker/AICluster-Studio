@@ -1,0 +1,208 @@
+2026-07-04 13:20:42,547 [INFO] app.main: Starting AICluster v1.0.0
+2026-07-04 13:20:43,236 [INFO] app.main: Database initialized
+2026-07-04 13:20:43,480 [INFO] app.main: Offline worker checker started
+2026-07-04 13:23:35,505 [INFO] app.main: Starting AICluster v1.0.0
+2026-07-04 13:23:35,524 [INFO] app.main: Database initialized
+2026-07-04 13:23:35,547 [INFO] app.main: Offline worker checker started
+2026-07-04 13:23:35,548 [INFO] app.main: Shutdown complete
+2026-07-04 13:23:35,572 [ERROR] sqlalchemy.pool.impl.NullPool: Exception during reset or similar
+Traceback (most recent call last):
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\site-packages\uvicorn\server.py", line 162, in startup
+    server = await loop.create_server(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 1622, in create_server
+    raise OSError(err.errno, msg) from None
+OSError: [Errno 10048] error while attempting to bind on address ('127.0.0.1', 8000): [winerror 10048] only one usage of each socket address (protocol/network address/port) is normally permitted
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 683, in run_forever
+    self._run_once()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 2042, in _run_once
+    handle._run()
+    ~~~~~~~~~~~^^
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\asyncio\events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\site-packages\uvicorn\server.py", line 69, in serve
+    await self._serve(sockets)
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\site-packages\uvicorn\server.py", line 84, in _serve
+    await self.startup(sockets=sockets)
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\site-packages\uvicorn\server.py", line 172, in startup
+    sys.exit(1)
+    ~~~~~~~~^^^
+SystemExit: 1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\pool\base.py", line 986, in _finalize_fairy
+    fairy._reset(
+    ~~~~~~~~~~~~^
+        pool,
+        ^^^^^
+    ...<2 lines>...
+        asyncio_safe=can_manipulate_connection,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\pool\base.py", line 1432, in _reset
+    pool._dialect.do_rollback(self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\engine\default.py", line 699, in do_rollback
+    dbapi_connection.rollback()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\dialects\sqlite\aiosqlite.py", line 263, in rollback
+    self.await_(self._connection.rollback())
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\site-packages\aiosqlite\core.py", line 169, in rollback
+    await self._execute(self._conn.rollback)
+  File "C:\Users\a2dpo\AppData\Local\Programs\Python\Python313\Lib\site-packages\aiosqlite\core.py", line 132, in _execute
+    return await future
+           ^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+2026-07-04 13:23:47,899 [INFO] app.main: Starting AICluster v1.0.0
+2026-07-04 13:23:47,922 [INFO] app.main: Database initialized
+2026-07-04 13:23:47,942 [INFO] app.main: Offline worker checker started
+2026-07-04 13:24:00,186 [INFO] app.main: Starting AICluster v1.0.0
+2026-07-04 13:24:00,206 [INFO] app.main: Database initialized
+2026-07-04 13:24:00,236 [INFO] app.main: Offline worker checker started
+2026-07-04 13:24:13,079 [INFO] app.main: Starting AICluster v1.0.0
+2026-07-04 13:24:13,104 [INFO] app.main: Database initialized
+2026-07-04 13:24:13,128 [INFO] app.main: Offline worker checker started
+2026-07-04 13:24:28,367 [INFO] app.main: Starting AICluster v1.0.0
+2026-07-04 13:24:28,390 [INFO] app.main: Database initialized
+2026-07-04 13:24:28,413 [INFO] app.main: Offline worker checker started
+2026-07-04 13:24:50,694 [INFO] app.main: Starting AICluster v1.0.0
+2026-07-04 13:24:51,377 [INFO] app.main: Database initialized
+2026-07-04 13:24:51,615 [INFO] app.main: Offline worker checker started
+2026-07-04 13:37:14,845 [ERROR] app.main: Offline checker error: (sqlite3.OperationalError) no such table: workers
+[SQL: SELECT workers.id, workers.worker_name, workers.hostname, workers.ip, workers.status, workers.cpu_percent, workers.ram_percent, workers.disk_percent, workers.temperature, workers.network_speed, workers.current_job, workers.version, workers.cpu_limit, workers.ram_limit, workers.priority, workers.is_paused, workers.last_seen, workers.registered_at 
+FROM workers 
+WHERE workers.last_seen < ? AND (workers.status NOT IN (?, ?))]
+[parameters: ('2026-07-04 08:06:59.832770', 'offline', 'disabled')]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-07-04 13:37:15,366 [INFO] app.main: Starting AICluster v1.0.0
+2026-07-04 13:37:16,032 [INFO] app.main: Database initialized
+2026-07-04 13:37:16,268 [INFO] app.main: Offline worker checker started
+2026-07-04 19:27:58,189 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:27:59,709 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:01,038 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:02,206 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:03,465 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:04,644 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:05,921 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:07,091 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:08,276 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:09,442 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:10,657 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:11,837 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:12,984 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:15,301 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:15,304 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:15,306 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:15,308 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:15,309 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:15,310 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:15,311 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:15,314 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:15,315 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:15,316 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:15,318 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:15,319 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:15,321 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:21,593 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:22,984 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:24,234 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:25,448 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:26,658 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:27,934 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:29,125 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:30,351 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:31,519 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:32,715 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:33,876 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:35,078 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:36,238 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:37,458 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:38,617 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:39,856 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:41,047 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:42,228 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:43,499 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:28:44,697 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:22,065 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:23,375 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:24,688 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:25,871 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:27,080 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:28,244 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:29,409 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:31,109 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:32,292 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:33,461 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:34,608 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:35,763 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:37,020 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:39,415 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:45,726 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:46,922 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:48,173 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:49,358 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:50,621 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:51,861 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:53,171 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:54,369 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:55,550 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:56,783 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:58,036 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:29:59,228 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:30:00,449 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:30:01,701 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:30:02,930 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:30:04,140 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:30:05,319 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:30:06,571 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:30:07,848 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:30:09,197 [WARNING] slowapi: ratelimit 10 per 1 minute (127.0.0.1) exceeded at endpoint: /api/v1/auth/login
+2026-07-04 19:31:35,457 [INFO] app.services.scheduler: Assigned job ba863096-2e80-4a8d-9065-3a3df1952a2f to worker HP-02
+2026-07-04 19:39:00,173 [INFO] app.main: Starting AICluster v1.0.0
+2026-07-04 19:39:00,890 [INFO] app.main: Database initialized
+2026-07-04 19:39:01,128 [INFO] app.main: Offline worker checker started
+2026-07-04 19:39:21,550 [INFO] app.main: Marked 1 workers offline
+2026-07-04 20:05:21,598 [INFO] app.main: Starting AICluster v1.0.0
+2026-07-04 20:05:22,274 [INFO] app.main: Database initialized
+2026-07-04 20:05:22,512 [INFO] app.main: Offline worker checker started
+2026-07-04 20:05:43,671 [INFO] app.main: Marked 2 workers offline
+2026-07-04 20:41:10,472 [INFO] app.main: Starting AICluster v1.0.0
+2026-07-04 20:41:11,160 [INFO] app.main: Database initialized
+2026-07-04 20:41:11,400 [INFO] app.main: Offline worker checker started
+2026-07-04 20:41:36,563 [INFO] app.main: Marked 1 workers offline
+2026-07-04 20:41:50,587 [INFO] app.main: Starting AICluster v1.0.0
+2026-07-04 20:41:51,263 [INFO] app.main: Database initialized
+2026-07-04 20:41:51,501 [INFO] app.main: Offline worker checker started
+2026-07-04 20:42:11,545 [INFO] app.main: Marked 1 workers offline
+2026-07-04 21:26:55,501 [ERROR] app.main: Offline checker error: (sqlite3.OperationalError) unable to open database file
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-07-04 21:27:00,544 [ERROR] app.main: Offline checker error: (sqlite3.OperationalError) unable to open database file
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
