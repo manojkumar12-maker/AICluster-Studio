@@ -14,7 +14,7 @@
 
 If you discover a security vulnerability in AICluster, please report it by emailing:
 
-**security@aicluster.local**
+**manoj.spoffice.kri@gmail.com**
 
 Do **not** report security vulnerabilities via public GitHub issues.
 
