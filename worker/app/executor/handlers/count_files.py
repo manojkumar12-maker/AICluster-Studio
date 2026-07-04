@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 from ..base import BaseJobHandler
@@ -7,26 +8,25 @@ class CountFilesHandler(BaseJobHandler):
     async def execute(self, job_id: str, payload: dict) -> dict:
         directory = payload.get("directory", ".")
         pattern = payload.get("pattern", None)
+        try:
+            result = await asyncio.to_thread(self._count_sync, directory, pattern, job_id)
+            return result
+        except Exception as e:
+            return {"error": str(e), "job_id": job_id, "handler": "count_files"}
+
+    @staticmethod
+    def _count_sync(directory: str, pattern: str | None, job_id: str) -> dict:
         count = 0
         total_size = 0
-
-        try:
-            for root, dirs, files in os.walk(directory):
-                for fname in files:
-                    if pattern and pattern not in fname:
-                        continue
-                    count += 1
-                    try:
-                        total_size += os.path.getsize(os.path.join(root, fname))
-                    except OSError:
-                        pass
-        except Exception as e:
-            return {
-                "error": str(e),
-                "job_id": job_id,
-                "handler": "count_files",
-            }
-
+        for root, dirs, files in os.walk(directory):
+            for fname in files:
+                if pattern and pattern not in fname:
+                    continue
+                count += 1
+                try:
+                    total_size += os.path.getsize(os.path.join(root, fname))
+                except OSError:
+                    pass
         return {
             "directory": directory,
             "pattern": pattern,

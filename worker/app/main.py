@@ -35,6 +35,15 @@ reporter: Reporter | None = None
 job_registry = JobRegistry()
 shutdown_event = asyncio.Event()
 
+
+class _NoOpReporter:
+    async def report_progress(self, job_id=None, progress=None, logs=None):
+        pass
+    async def report_result(self, job_id=None, status=None, result=None, error=None, duration_ms=None, logs=None):
+        pass
+
+_noop_reporter = _NoOpReporter()
+
 job_registry.register("echo", EchoJobHandler())
 job_registry.register("sleep", SleepJobHandler())
 job_registry.register("dir_scan", DirectoryScanHandler())
@@ -66,7 +75,8 @@ async def _run_worker():
     logger.info(f"Starting worker: {settings.get_worker_name()} (v{VERSION})")
 
     state = WorkerState.CONNECTING
-    http_client = WorkerHttpClient(settings.master_url)
+    reporter = _noop_reporter  # type: ignore
+    http_client = WorkerHttpClient(settings.master_url, worker_secret=settings.worker_secret)
     registrar = Registrar(http_client)
     retry = RetryHandler()
 
@@ -104,8 +114,14 @@ async def _worker_loop(worker_id: str):
         state = WorkerState.POLL_JOB
         job_data = await poller.poll()
 
-        if job_data is None:
+        if not isinstance(job_data, dict):
             state = WorkerState.NO_JOB
+            await asyncio.sleep(settings.poll_interval)
+            continue
+
+        if not job_data.get("id"):
+            state = WorkerState.NO_JOB
+            await asyncio.sleep(settings.poll_interval)
             continue
 
         state = WorkerState.HAS_JOB
@@ -130,21 +146,9 @@ async def _execute_job(worker_id: str, job_data: dict):
         return
 
     state = WorkerState.EXECUTING
-    last_progress = 0
-    last_report_time = start_time
-    progress = 0
 
     try:
-        if hasattr(handler, "execute_with_progress"):
-            async for progress_update in handler.execute_with_progress(job_id, payload):
-                progress = progress_update
-                if _should_report_progress(progress, last_progress, last_report_time):
-                    await reporter.report_progress(job_id, progress)
-                    last_progress = progress
-                    last_report_time = asyncio.get_event_loop().time()
-            result = await handler.execute(job_id, payload)
-        else:
-            result = await handler.execute(job_id, payload)
+        result = await handler.execute(job_id, payload)
 
         duration_ms = (asyncio.get_event_loop().time() - start_time) * 1000
         await reporter.report_progress(job_id, 100.0)

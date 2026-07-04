@@ -1,4 +1,7 @@
 from datetime import timedelta, datetime, timezone
+import os
+import secrets
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -41,18 +44,22 @@ class AuthService:
         )
         return user, token
 
-    async def seed_default_admin(self):
+    async def seed_default_admin(self) -> str | None:
         result = await self.db.execute(
             select(User).where(User.username == "admin")
         )
-        if not result.scalar_one_or_none():
-            admin = User(
-                username="admin",
-                hashed_password=pwd_context.hash("admin123"),
-                role="admin",
-            )
-            self.db.add(admin)
-            await self.db.commit()
+        if result.scalar_one_or_none():
+            return None
+
+        password = os.environ.get("AICLUSTER_ADMIN_PASSWORD") or secrets.token_urlsafe(16)
+        admin = User(
+            username="admin",
+            hashed_password=pwd_context.hash(password),
+            role="admin",
+        )
+        self.db.add(admin)
+        await self.db.commit()
+        return password
 
     async def get_user_by_id(self, user_id: str) -> User | None:
         result = await self.db.execute(

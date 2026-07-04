@@ -1,5 +1,47 @@
 # Changelog
 
+## v1.3.1 (2026-07-04)
+
+### Security
+- **CRITICAL**: Replaced hardcoded JWT secret with auto-generated 32-byte random key (S-001)
+- **CRITICAL**: Replaced hardcoded "admin123" password with random generation on first run (S-002)
+- **CRITICAL**: Enforced JWT authentication on all 131 API endpoints (S-003)
+- **HIGH**: Restricted CORS to configured origins instead of wildcard (S-005)
+- **HIGH**: Added rate limiting middleware (slowapi, 100/min default) (S-007)
+- **HIGH**: Added JWT/worker_secret required for WebSocket connections (S-008)
+- **HIGH**: Added worker_secret authentication for worker registration and communication (S-009)
+- **HIGH**: Added path traversal prevention in worker file handlers (S-006)
+- **HIGH**: Validated SQL injection safety in repository search (S-012)
+
+### Stability
+- Fixed double commit in `get_next_for_worker` scheduler method (C-005)
+- Stored `duration_ms` in job record instead of discarding (C-006)
+- Replaced `_running` flag with `asyncio.Event` for clean scheduler shutdown (C-008)
+- Added no-op reporter to prevent worker crash on startup (C-003)
+- Removed dead `execute_with_progress` branch from worker (C-002)
+- Added type-safe poll result handling in worker (C-004)
+- Removed 88 lines of dead code (`worker/app/services/executor.py`) (C-001)
+- Wrapped blocking `os.walk()` in `asyncio.to_thread()` for 3 worker handlers (C-007)
+- JWT secret no longer appears in logs (R-002)
+- Worker supports `AICLUSTER_MASTER_SECRET` env var for auto-configuration (R-003)
+
+### UI
+- Replaced all 8 placeholder dashboard pages with functional implementations
+- Jobs page: real-time table with status badges and progress bars
+- Logs page: scrollable log viewer with level filtering
+- Chat page: interactive AI chat with message history
+- Projects page: project listing with empty state
+- Files page: repository browser with folder icons
+- Settings page: account and cluster info
+- Analytics page: metric cards with roadmap notes
+
+### Build & CI
+- Added GitHub Actions CI/CD pipeline (lint, test backend, test worker, build frontend)
+- Updated VERSION to 1.3.1
+- All changelog entries synchronized
+
+### Sprint 1-4 (2026-07-04)
+
 ## v1.3.0 (2026-07-03)
 
 ### Added

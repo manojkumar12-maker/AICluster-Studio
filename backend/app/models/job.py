@@ -25,6 +25,8 @@ class Job(Base):
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
     logs: Mapped[str | None] = mapped_column(Text, nullable=True)
 
+    duration_ms: Mapped[float | None] = mapped_column(Float, nullable=True)
+
     priority: Mapped[int] = mapped_column(Integer, default=2)
     retry_count: Mapped[int] = mapped_column(Integer, default=0)
     max_retries: Mapped[int] = mapped_column(Integer, default=3)

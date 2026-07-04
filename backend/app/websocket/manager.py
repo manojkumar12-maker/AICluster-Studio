@@ -3,6 +3,9 @@ import logging
 from typing import Set
 
 from fastapi import WebSocket
+from jose import jwt, JWTError
+
+from ..config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +15,25 @@ class WebSocketManager:
         self.active_connections: Set[WebSocket] = set()
         self.max_connections = max_connections
 
-    async def connect(self, websocket: WebSocket):
+    async def connect(self, websocket: WebSocket, token: str | None = None):
+        if token:
+            try:
+                payload = jwt.decode(
+                    token,
+                    settings.secret_key,
+                    algorithms=[settings.algorithm],
+                )
+                websocket.state.user_id = payload.get("sub")
+                websocket.state.user_role = payload.get("role")
+            except JWTError:
+                await websocket.close(code=4001, reason="Invalid token")
+                logger.warning("WebSocket rejected: invalid token")
+                return
+        else:
+            await websocket.close(code=4001, reason="Authentication required")
+            logger.warning("WebSocket rejected: no token provided")
+            return
+
         if len(self.active_connections) >= self.max_connections:
             await websocket.close(code=1013, reason="Too many connections")
             logger.warning(f"WebSocket rejected: max connections ({self.max_connections}) reached")

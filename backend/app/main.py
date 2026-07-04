@@ -11,6 +11,8 @@ from fastapi.staticfiles import StaticFiles
 from .config import settings
 from .database import init_db, get_db
 from .api.v1 import router as api_router
+from .api.dependencies import auth_middleware
+from .middleware import limiter, SlowAPIMiddleware
 from .websocket.manager import ws_manager
 from .services.worker_manager import WorkerManagerService
 from .services.auth import AuthService
@@ -32,7 +34,9 @@ async def lifespan(app: FastAPI):
 
     async for db in get_db():
         auth_service = AuthService(db)
-        await auth_service.seed_default_admin()
+        admin_password = await auth_service.seed_default_admin()
+        if admin_password:
+            print(f"ADMIN PASSWORD: {admin_password}", file=__import__('sys').stderr)
         break
 
     async def check_offline_workers():
@@ -74,12 +78,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.middleware("http")(auth_middleware)
+app.state.limiter = limiter
+app.add_middleware(SlowAPIMiddleware)
+
 app.include_router(api_router)
 
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    await ws_manager.connect(websocket)
+    token = websocket.query_params.get("token")
+    await ws_manager.connect(websocket, token=token)
     if websocket not in ws_manager.active_connections:
         return
     try:

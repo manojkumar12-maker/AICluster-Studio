@@ -16,22 +16,32 @@ logger = logging.getLogger(__name__)
 class SchedulerService:
     def __init__(self, db: AsyncSession):
         self.db = db
-        self._running = False
+        self._stop_event = asyncio.Event()
+        self._task: Optional[asyncio.Task] = None
 
     async def start(self):
-        self._running = True
-        asyncio.create_task(self._scheduler_loop())
+        self._stop_event.clear()
+        self._task = asyncio.create_task(self._scheduler_loop())
 
     async def stop(self):
-        self._running = False
+        self._stop_event.set()
+        if self._task:
+            self._task.cancel()
+            try:
+                await self._task
+            except asyncio.CancelledError:
+                pass
 
     async def _scheduler_loop(self):
-        while self._running:
+        while not self._stop_event.is_set():
             try:
                 await self._process_queue()
             except Exception as e:
                 logger.error(f"Scheduler error: {e}")
-            await asyncio.sleep(2)
+            try:
+                await asyncio.wait_for(self._stop_event.wait(), timeout=2)
+            except asyncio.TimeoutError:
+                pass
 
     async def _process_queue(self):
         queued_result = await self.db.execute(
@@ -163,8 +173,6 @@ class SchedulerService:
             if worker:
                 worker.status = "busy"
                 worker.current_job = job.id
-            await self.db.commit()
-            await self.db.refresh(job)
             log = SystemLog(
                 level="INFO",
                 message=f"Job '{job.id}' assigned to worker '{worker_id}'",
@@ -172,6 +180,7 @@ class SchedulerService:
             )
             self.db.add(log)
             await self.db.commit()
+            await self.db.refresh(job)
         return job
 
     async def complete_job(
@@ -189,7 +198,7 @@ class SchedulerService:
         if error is not None:
             job.error = error
         if duration_ms is not None:
-            pass
+            job.duration_ms = duration_ms
         if job.assigned_worker:
             w_result = await self.db.execute(
                 select(Worker).where(Worker.id == job.assigned_worker)

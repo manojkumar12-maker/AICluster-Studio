@@ -3,6 +3,9 @@ import tempfile
 import pytest
 from httpx import AsyncClient, ASGITransport
 
+# Set a known admin password for tests
+os.environ.setdefault("AICLUSTER_ADMIN_PASSWORD", "TestAdminPass123!")
+
 _test_db_file = os.path.join(tempfile.gettempdir(), "aicluster_test.db")
 os.environ["DATABASE_URL"] = f"sqlite+aiosqlite:///{_test_db_file}"
 
@@ -19,8 +22,13 @@ def anyio_backend():
     return "asyncio"
 
 
+@pytest.fixture
+def admin_password():
+    return os.environ.get("AICLUSTER_ADMIN_PASSWORD", "TestAdminPass123!")
+
+
 @pytest.fixture(autouse=True)
-async def setup_db():
+async def setup_db(admin_password):
     engine = get_engine()
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -34,11 +42,33 @@ async def setup_db():
 
 
 @pytest.fixture
-async def client():
+async def auth_token(admin_password):
     from app.main import app
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        resp = await ac.post(
+            "/api/v1/auth/login",
+            json={"username": "admin", "password": admin_password},
+        )
+        if resp.status_code == 200:
+            return resp.json()["access_token"]
+        return None
+
+
+@pytest.fixture
+async def client(auth_token):
+    from app.main import app
+    transport = ASGITransport(app=app)
+    headers = {"Authorization": f"Bearer {auth_token}"} if auth_token else {}
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as ac:
         yield ac
+
+
+@pytest.fixture
+async def db_session():
+    factory = get_session_factory()
+    async with factory() as session:
+        yield session
 
 
 def pytest_sessionfinish(session):

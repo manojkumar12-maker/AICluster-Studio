@@ -1,18 +1,17 @@
 <div align="center">
 
-# 🤖 AICluster
+# 🚀 AICluster v1.3.1
 
 **Offline-first AI cluster management platform for distributed computing across Windows machines**
 
-[![GitHub Release](https://img.shields.io/github/v/release/aicluster/aicluster?style=flat&logo=github&color=blue)](https://github.com/aicluster/aicluster/releases)
-[![GitHub Stars](https://img.shields.io/github/stars/aicluster/aicluster?style=flat&logo=github&color=yellow)](https://github.com/aicluster/aicluster/stargazers)
-[![GitHub Issues](https://img.shields.io/github/issues/aicluster/aicluster?style=flat&logo=github&color=red)](https://github.com/aicluster/aicluster/issues)
-[![License](https://img.shields.io/badge/License-All%20Rights%20Reserved-red?style=flat&logo=creative-commons&logoColor=white)](NOTICE.md)
+[![Version](https://img.shields.io/badge/Version-1.3.1-blue?style=flat&logo=github&color=blue)](https://github.com/manojkumar12-maker/AICluster-Studio/releases)
+[![Security](https://img.shields.io/badge/Security-Hardened-brightgreen?style=flat)](SECURITY.md)
+[![Tests](https://img.shields.io/badge/Tests-74/74-green?style=flat)](backend/tests/)
 [![Python](https://img.shields.io/badge/Python-3.12+-blue?style=flat&logo=python&logoColor=white)](https://python.org)
-[![Node](https://img.shields.io/badge/Node-20+-green?style=flat&logo=nodedotjs&logoColor=white)](https://nodejs.org)
-[![Rust](https://img.shields.io/badge/Rust-1.80+-orange?style=flat&logo=rust&logoColor=white)](https://rust-lang.org)
-[![Tauri](https://img.shields.io/badge/Tauri-v2-purple?style=flat&logo=tauri&logoColor=white)](https://tauri.app)
-[![Build](https://img.shields.io/badge/Build-Passing-success?style=flat&logo=githubactions&logoColor=white)](https://github.com/aicluster/aicluster/actions)
+[![Build](https://img.shields.io/badge/Build-Passing-success?style=flat)](build/)
+[![Windows](https://img.shields.io/badge/Windows-10/11-blue?style=flat&logo=windows&logoColor=white)](INSTALLATION.md)
+
+**From v1.3.0 → v1.3.1: 4 CRITICAL and 5 HIGH security issues resolved. Production ready.**
 
 </div>
 
@@ -22,51 +21,38 @@
 
 | Area | Capabilities |
 |------|-------------|
-| **🧠 AI Runtime** | Multi-provider (Ollama, llama.cpp, OpenAI-compatible), model routing, context optimization, chat sessions, tool execution |
-| **📦 Workflow Engine** | DAG-based task orchestration, parallel/fan-out/fan-in execution, exponential backoff retry, artifact store |
-| **🤝 Multi-Agent** | 12 default agents, planning engine, orchestrator, inter-agent communication, review & merge pipelines |
-| **🔌 Plugin System** | Plugin SDK, hook registry, 16 plugin types, lifecycle management, sandboxed execution |
-| **📊 Repository Intelligence** | Multi-language symbol parser, incremental indexer, code metrics, dependency graph, full-text search |
-| **🔧 Engineering Engine** | Goal analysis, automated planning, quality gates, self-repair loop, documentation generation |
-| **📋 Audit System** | Event capture middleware, 17 categories, full-text search, CSV/JSON export, retention policies |
-| **🖥️ Studio IDE** | Tauri v2 desktop IDE, workspace management, Monaco editor, AI chat, workflow designer |
-| **🎮 Control Centers** | Master & Worker desktop apps, cluster topology, live dashboard, maintenance mode |
-| **📡 Cluster Operations** | LAN discovery, auto-registration, backup/restore, alert center, diagnostics |
-| **🔐 Security** | JWT auth with bcrypt, audit trails, plugin permissions, role-based access |
-| **🌐 Offline-First** | 100% LAN operation, no internet required after setup, all features work disconnected |
+| **🔐 Security** | JWT auth on all 131 endpoints, bcrypt passwords, rate limiting, CORS enforcement |
+| **🧠 AI Runtime** | Multi-provider (Ollama, llama.cpp, OpenAI-compatible), model routing, context optimization, chat sessions |
+| **📦 Workflow Engine** | DAG-based task orchestration, parallel execution, exponential backoff retry, artifact store |
+| **🤝 Multi-Agent** | 12 default agents, orchestrated pipelines, inter-agent communication, code review & merge |
+| **🔌 Plugin System** | Plugin SDK with 16 hook types, lifecycle management, dynamic loading |
+| **📊 Repository Intelligence** | Multi-language symbol parser, dependency graph, code metrics, full-text search |
+| **🛠️ Engineering Engine** | Goal analysis, automated planning, quality gates, self-repair, documentation generation |
+| **📋 Audit System** | Event capture middleware, 17 categories, search, CSV/JSON export, retention policies |
+| **👷 Worker Fleet** | Distributed job execution, 21-state machine, auto-reconnect, async handlers |
+| **🌐 Offline-First** | 100% LAN operation, no internet required after initial setup |
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        AICluster Platform                            │
-├──────────────────────┬──────────────────────┬───────────────────────┤
-│    Master Server      │   Worker Fleet       │   Desktop Apps        │
-│  ┌────────────────┐  │  ┌────────────────┐  │  ┌─────────────────┐  │
-│  │ FastAPI + ASGI  │  │  │ Worker Agent   │  │  │ Studio (Tauri)   │  │
-│  │ SQLAlchemy/SQLite│  │  │ State Machine  │  │  │ Workspace Mgmt   │  │
-│  │ WebSocket Broker │  │  │ Job Executor   │  │  │ Monaco Editor    │  │
-│  └────────┬───────┘  │  │ Resource Limits │  │  │ Workflow Designer│  │
-│           │          │  └────────┬───────┘  │  └─────────────────┘  │
-│  ┌────────┴───────┐  │           │          │  ┌─────────────────┐  │
-│  │  REST + WebSocket   │           │          │  │ Master Control  │  │
-│  │  (HTTP/WS)     │  │           │          │  │ Center (Tauri)   │  │
-│  └────────────────┘  │           │          │  │ Cluster Mgmt     │  │
-│           │          │           │          │  └─────────────────┘  │
-│  ┌────────┴───────┐  │           │          │  ┌─────────────────┐  │
-│  │ Subsystems:     │  │           │          │  │ Worker Control  │  │
-│  │ AI Runtime      │◄─┼───────────┼──────────┼──┤ Center (Tauri)  │  │
-│  │ Agents          │  │           │          │  │ Local Monitoring│  │
-│  │ Workflow        │  │           │          │  └─────────────────┘  │
-│  │ Repository      │  │           │          │                       │
-│  │ Engineering     │  │           │          │  ┌─────────────────┐  │
-│  │ Plugins         │  │           │          │  │ CLI (aicluster)  │  │
-│  │ Audit           │  │           │          │  │ PyInstaller EXE  │  │
-│  │ Production      │  │           │          │  └─────────────────┘  │
-│  └────────────────┘  │           │          │                       │
-└──────────────────────┴───────────┴──────────┴───────────────────────┘
+Master (FastAPI :8000)          Workers (FastAPI :8001+)
+┌──────────────────────┐        ┌──────────────────────┐
+│ REST API (131 routes)│        │ State Machine       │
+│ WebSocket (JWT auth) │◄──────►│ Job Execution       │
+│ Scheduler            │        │ Path Validation     │
+│ AI Runtime           │        │ Async IO            │
+│ SQLite Database      │        │ Auto-Reconnect      │
+│ Rate Limiter         │        └──────────────────────┘
+└──────────────────────┘
+         │
+         ▼
+┌──────────────────────┐
+│ Web Dashboard (:3000)│
+│ Desktop Apps (Tauri) │
+│ CLI (aicluster.exe)  │
+└──────────────────────┘
 ```
 
 ---
@@ -74,39 +60,51 @@
 ## 🚀 Quick Start
 
 ```powershell
-# One-command setup
-git clone https://github.com/aicluster/aicluster.git
-cd aicluster
-python -m build.build
+# 1. Install Python 3.12+
+# 2. Clone
+git clone https://github.com/manojkumar12-maker/AICluster-Studio.git
+cd AICluster-Studio
+
+# 3. Install dependencies
+pip install -r backend/requirements.txt
+pip install slowapi pytest pytest-asyncio httpx
+
+# 4. Start the Master
+cd backend
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+# 5. Note the admin password printed to console
+# 6. Open http://localhost:3000 and log in
 ```
 
-### Prerequisites
-
-- **Python** 3.12+
-- **Node.js** 20+ (LTS)
-- **Rust** 1.80+ (for Tauri desktop apps)
-- **Windows 10/11** (primary target; Linux/macOS experimental)
-
-The build script handles:
-- Virtual environment creation & dependency installation
-- Frontend (Next.js) build
-- Studio (Vite + Tauri) build
-- Master Control Center & Worker Control Center builds
-- Database initialization
-- PyInstaller EXE packaging
-- Inno Setup installer generation
+📖 **[Full Installation Guide](docs/INSTALLATION.md)** — covers installer, portable, source, and production deployment.
 
 ---
 
-## 📸 Screenshots
+## 🔐 Security Posture
 
-| Dashboard | Studio IDE | Cluster Map |
-|:---------:|:----------:|:-----------:|
-| ![Dashboard](docs/Images/dashboard.png) | ![Studio](docs/Images/studio.png) | ![Cluster](docs/Images/cluster-map.png) |
-| **Worker Manager** | **Workflow Designer** | **AI Chat** |
-| ![Workers](docs/Images/workers.png) | ![Workflow](docs/Images/workflow-designer.png) | ![AI Chat](docs/Images/ai-chat.png) |
+| Severity | v1.3.0 | v1.3.1 |
+|----------|--------|--------|
+| CRITICAL | 4 | **0** |
+| HIGH | 5 | **0** |
+| Authentication | None | JWT on all endpoints |
+| Worker Auth | None | Worker secret required |
+| Rate Limiting | None | 100/min default |
+| CORS | `*` allowed | Restricted to configured origins |
 
-> Screenshots are generated during the build process and stored in `docs/Images/`.
+---
+
+## 📸 Documentation
+
+| Guide | Description |
+|-------|-------------|
+| [INSTALLATION.md](docs/INSTALLATION.md) | Complete installation guide |
+| [QUICK_START.md](docs/QUICK_START.md) | 5-minute setup |
+| [FIRST_CLUSTER.md](docs/FIRST_CLUSTER.md) | Multi-worker cluster setup |
+| [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Production hardening |
+| [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | 45 common problems |
+| [FAQ.md](docs/FAQ.md) | Frequently asked questions |
+| [UPGRADING.md](docs/UPGRADING.md) | Upgrade from v1.3.0 |
 
 ---
 
@@ -114,72 +112,56 @@ The build script handles:
 
 | Layer | Technology |
 |-------|-----------|
-| **Backend** | Python 3.12+, FastAPI, SQLAlchemy 2.0, Alembic, Pydantic V2 |
-| **Database** | SQLite (via aiosqlite + greenlet async) |
-| **Frontend** | Next.js 15, React 18, TypeScript, TailwindCSS, shadcn/ui |
-| **Studio IDE** | Tauri v2, Rust, Vite, React 19, TypeScript 6, TailwindCSS v4 |
-| **Desktop Apps** | Tauri v2 (Master Control Center, Worker Control Center, Studio) |
+| **Backend** | Python 3.12+, FastAPI, SQLAlchemy 2.0, Pydantic V2 |
+| **Database** | SQLite (via aiosqlite) |
+| **Frontend** | Next.js 15, React 18, TypeScript, TailwindCSS |
+| **Desktop** | Tauri v2 (Rust + React) |
 | **State** | Zustand, TanStack React Query |
-| **AI Providers** | Ollama, llama.cpp, OpenAI-compatible (vLLM, LM Studio, etc.) |
-| **Auth** | JWT (python-jose), bcrypt/passlib |
-| **Packaging** | PyInstaller (--onefile), Inno Setup, Tauri bundler |
-| **Real-time** | WebSockets (websockets 14.x) |
-| **Testing** | pytest (backend), Vitest (frontend) |
+| **AI** | Ollama, llama.cpp, OpenAI-compatible |
+| **Auth** | JWT (python-jose), bcrypt |
+| **Packaging** | PyInstaller, Inno Setup 6 |
+| **Testing** | pytest (74 tests), Vitest |
 
 ---
 
 ## 📁 Directory Structure
 
-<details>
-<summary>Click to expand</summary>
-
 ```
 AICluster/
-├── backend/                  # FastAPI master server
-│   ├── app/
-│   │   ├── agents/           # Multi-agent orchestration engine
-│   │   ├── ai/               # AI runtime (providers, routing, sessions)
-│   │   ├── api/              # REST API route handlers
-│   │   ├── audit/            # Event capture & audit system
-│   │   ├── engineering/      # Autonomous software engineering engine
-│   │   ├── plugins/          # Plugin SDK, loader, registry
-│   │   ├── production/       # Monitoring, health, diagnostics
-│   │   ├── repository/       # Code intelligence & search
-│   │   ├── services/         # Auth, scheduler, worker manager
-│   │   ├── workflow/         # DAG-based workflow execution
-│   │   ├── models/           # SQLAlchemy database models
-│   │   ├── schemas/          # Pydantic request/response schemas
-│   │   └── static/           # Static assets & dashboard HTML
-│   ├── tests/                # 44+ pytest tests
-│   └── dist/                 # PyInstaller output
-├── frontend/                 # Next.js 15 dashboard
-│   └── src/                  # React components, pages, hooks
-├── studio/                   # Tauri v2 desktop IDE
-│   ├── src-tauri/            # Rust/Tauri backend
-│   └── src/                  # React + Vite frontend
-├── master-control-center/    # Tauri v2 cluster management app
-├── worker-control-center/    # Tauri v2 worker monitoring app
-├── worker/                   # Worker agent (FastAPI)
-├── build/                    # Build system (PyInstaller, Tauri, Inno Setup)
-│   └── verification/         # Post-build validation pipeline
-├── scripts/                  # Setup, simulator, installers
-├── config/                   # YAML configuration (dev/prod)
-├── shared/                   # Shared types & protocols
-│   ├── py/                   # Python shared schemas
-│   └── ts/                   # TypeScript shared types
-├── docs/                     # Documentation & screenshots
-├── plugins/                  # User-installed plugins
-├── data/                     # Runtime data (DB, artifacts, logs)
-├── models/                   # Local AI model files
-│   └── assets/               # App icons, branding
-├── VERSION                   # Current version (1.3.0)
-├── CHANGELOG.md              # Release history
-├── CONTRIBUTING.md           # Contribution guidelines
-├── NOTICE.md                 # Copyright notice
-├── PROJECT_STATE.md          # Project status document
-└── SECURITY.md               # Security policy
+├── backend/              # FastAPI master server (Python)
+│   ├── app/              # Application code (15+ subsystems)
+│   ├── tests/            # 60 pytest tests
+│   └── data/             # Runtime database & secrets
+├── worker/               # Worker agent (Python)
+│   ├── app/              # Worker application code
+│   └── tests/            # 14 pytest tests
+├── frontend/             # Next.js 15 dashboard
+├── studio/               # Tauri v2 desktop IDE
+├── master-control-center/# Tauri cluster management app
+├── worker-control-center/# Tauri worker management app
+├── build/                # Build system & verification
+├── scripts/              # PowerShell & Python tools
+├── config/               # YAML configuration
+├── shared/               # Shared types & protocols
+├── docs/                 # Documentation (8 guides)
+├── dist/                 # Built executables
+├── VERSION               # 1.3.1
+└── CHANGELOG.md          # Release history
 ```
-</details>
+
+---
+
+## ✅ Build
+
+Executables are built using PyInstaller:
+
+| File | Size | For |
+|------|------|-----|
+| `AIClusterMaster.exe` | ~250 MB | Master server machine |
+| `AIClusterWorker.exe` | ~52 MB | Each worker machine |
+| `aicluster.exe` | ~30 MB | CLI (optional) |
+
+All in `dist/` organized by role.
 
 ---
 
@@ -187,26 +169,23 @@ AICluster/
 
 | Component | Minimum | Recommended |
 |-----------|---------|-------------|
-| **OS** | Windows 10 21H2 | Windows 11 23H2 |
-| **CPU** | 4 cores | 8+ cores |
-| **RAM** | 8 GB | 16+ GB |
-| **Disk** | 5 GB free | 20+ GB (with models) |
-| **Python** | 3.12 | 3.13 |
-| **Node.js** | 20 LTS | 22 LTS |
-| **Rust** | 1.80 | 1.85+ |
-| **Network** | LAN (100 Mbps) | LAN (1 Gbps) |
+| **OS** | Windows 10 22H2 | Windows 11 Pro |
+| **CPU** | 4 cores (i5) | 8+ cores (i7/Ultra) |
+| **RAM** | 16 GB | 32-64 GB |
+| **Disk** | 10 GB SSD | 50 GB NVMe |
+| **Python** | 3.12 | 3.12 |
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](SECURITY.md) before submitting pull requests.
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 
 ---
 
 ## 📄 License
 
-AICluster is © 2026 Manoj Kumar Mathangi. All rights reserved. See [NOTICE.md](NOTICE.md) for details. A license will be determined in a future release.
+AICluster is © 2026 Manoj Kumar Mathangi. All rights reserved. See [NOTICE.md](NOTICE.md).
 
 ---
 
