@@ -29,6 +29,7 @@ def _detect_repo_root() -> Path:
 
 REPO_ROOT: Path = _detect_repo_root()
 BUILD_DIR: Path = REPO_ROOT / "build"
+RUNTIME_DIR: Path = REPO_ROOT / "runtime"
 ASSETS_DIR: Path = REPO_ROOT / "assets"
 DIST_DIR: Path = REPO_ROOT / "dist"
 RELEASE_DIR: Path = REPO_ROOT / "release"
@@ -82,8 +83,8 @@ class BuildConfig:
     product_name: str = "AICluster"
     company: str = "AICluster"
     copyright: str = "Copyright (c) 2026 AICluster"
-    version: str = "1.2.2"
-    description: str = "AICluster - Offline AI Cluster Management Platform"
+    version: str = "2.0.0"
+    description: str = "AICluster - Native Desktop AI Cluster Platform"
     python_min_version: tuple = (3, 12)
     node_min_version: tuple = (18, 0)
     rust_min_version: tuple = (1, 70)
@@ -118,16 +119,18 @@ def _make_pyinstaller_targets() -> List[PyInstallerTarget]:
     icons = ICONS_DIR
     return [
         PyInstallerTarget(
-            key="master",
-            name="Master Server",
-            entry=REPO_ROOT / "build" / "modules" / "master_entry.py",
-            output_name="AIClusterMaster.exe",
-            output_subdir="master",
-            console=True,
-            icon=icons / "master.ico",
+            key="runtime",
+            name="AICluster Runtime",
+            entry=RUNTIME_DIR / "combined-entry.py",
+            output_name="AIClusterRuntime.exe",
+            output_subdir="runtime",
+            console=False,
+            icon=icons / "default.ico",
             add_data=[
                 (str(REPO_ROOT / "backend" / "app"), "app"),
                 (str(REPO_ROOT / "backend" / "alembic"), "alembic"),
+                (str(REPO_ROOT / "worker" / "app"), "worker_app"),
+                (str(REPO_ROOT / "worker" / "config.json"), "config.json"),
                 (str(REPO_ROOT / "shared" / "py"), "shared"),
                 (str(REPO_ROOT / "config"), "config"),
             ],
@@ -142,49 +145,19 @@ def _make_pyinstaller_targets() -> List[PyInstallerTarget]:
                 "uvicorn.protocols.websockets.auto",
                 "uvicorn.lifespan",
                 "uvicorn.lifespan.on",
-                "aiosqlite",
-                "sqlalchemy.dialects.sqlite",
-                "alembic",
-            ],
-            extra_args=[],
-            description="AICluster Master Server (FastAPI)",
-        ),
-        PyInstallerTarget(
-            key="worker",
-            name="Worker Service",
-            entry=REPO_ROOT / "build" / "modules" / "worker_entry.py",
-            output_name="AIClusterWorker.exe",
-            output_subdir="worker",
-            console=True,
-            icon=icons / "worker.ico",
-            add_data=[
-                (str(REPO_ROOT / "worker" / "app"), "app"),
-                (str(REPO_ROOT / "worker" / "config.json"), "config.json"),
-                (str(REPO_ROOT / "shared" / "py"), "shared"),
-            ],
-            hidden_imports=[
-                "uvicorn.logging",
-                "uvicorn.loops",
-                "uvicorn.loops.auto",
-                "uvicorn.protocols",
-                "uvicorn.protocols.http",
-                "uvicorn.protocols.http.auto",
-                "uvicorn.protocols.websockets",
-                "uvicorn.protocols.websockets.auto",
-                "uvicorn.lifespan",
-                "uvicorn.lifespan.on",
+                "uvicorn.lifespan.off",
                 "psutil",
             ],
-            description="AICluster Worker Service",
+            description="AICluster Runtime - Combined Master & Worker Service",
         ),
         PyInstallerTarget(
             key="cli",
             name="AICluster CLI",
-            entry=BUILD_DIR / "modules" / "cli_entry.py",
+            entry=RUNTIME_DIR / "cli-entry.py",
             output_name="aicluster.exe",
-            output_subdir="cli",
+            output_subdir="runtime",
             console=True,
-            icon=icons / "cli.ico",
+            icon=icons / "default.ico",
             add_data=[
                 (str(REPO_ROOT / "shared" / "py"), "shared"),
                 (str(REPO_ROOT / "config"), "config"),
@@ -199,33 +172,13 @@ def _make_tauri_targets() -> List[TauriTarget]:
     icons = ICONS_DIR
     return [
         TauriTarget(
-            key="master-control",
-            name="Master Control Center",
-            frontend_dir=REPO_ROOT / "master-control-center" / "frontend",
-            tauri_config_dir=REPO_ROOT / "master-control-center" / "frontend" / "src-tauri",
-            output_name="MasterControlCenter.exe",
-            output_subdir="master-control",
-            icon=icons / "master-control.ico",
-            description="AICluster Master Control Center desktop app",
-        ),
-        TauriTarget(
-            key="worker-control",
-            name="Worker Control Center",
-            frontend_dir=REPO_ROOT / "worker-control-center" / "frontend",
-            tauri_config_dir=REPO_ROOT / "worker-control-center" / "frontend" / "src-tauri",
-            output_name="WorkerControlCenter.exe",
-            output_subdir="worker-control",
-            icon=icons / "worker-control.ico",
-            description="AICluster Worker Control Center desktop app",
-        ),
-        TauriTarget(
             key="studio",
             name="AICluster Studio",
             frontend_dir=REPO_ROOT / "studio",
             tauri_config_dir=REPO_ROOT / "studio" / "src-tauri",
             output_name="AIClusterStudio.exe",
             output_subdir="studio",
-            icon=icons / "studio.ico",
+            icon=icons / "default.ico",
             description="AICluster Studio - Visual IDE & Workspace",
         ),
     ]
@@ -237,13 +190,12 @@ TAURI_TARGETS: List[TauriTarget] = _make_tauri_targets()
 RELEASE_LAYOUT: Dict[str, Path] = {
     "master": RELEASE_DIR / "master",
     "worker": RELEASE_DIR / "worker",
-    "master-control": RELEASE_DIR / "master-control",
-    "worker-control": RELEASE_DIR / "worker-control",
     "studio": RELEASE_DIR / "studio",
     "cli": RELEASE_DIR / "cli",
+    "runtime": RELEASE_DIR / "runtime",
     "checksums": RELEASE_DIR / "checksums",
     "installer": RELEASE_DIR / "installer",
-    "zip": RELEASE_DIR / "zip",
+    "portable": RELEASE_DIR / "portable",
     "reports": RELEASE_DIR / "reports",
 }
 

@@ -51,7 +51,7 @@ class AuthService:
         if result.scalar_one_or_none():
             return None
 
-        password = os.environ.get("AICLUSTER_ADMIN_PASSWORD") or secrets.token_urlsafe(16)
+        password = os.environ.get("AICLUSTER_ADMIN_PASSWORD") or "admin"
         admin = User(
             username="admin",
             hashed_password=pwd_context.hash(password),

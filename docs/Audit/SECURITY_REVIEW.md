@@ -1,4 +1,4 @@
-# SECURITY REVIEW — AICluster v1.3.0
+﻿# SECURITY REVIEW â€” AICluster v2.0.0
 
 ## Scope
 
@@ -34,7 +34,7 @@ secret_key: str = "aicluster-secret-key-change-in-production"
 **Impact**: Complete authentication bypass. Any network attacker who can reach the API can forge admin tokens.
 
 **Recommendation**:
-1. Remove the default value — require `SECRET_KEY` to be explicitly set in the environment
+1. Remove the default value â€” require `SECRET_KEY` to be explicitly set in the environment
 2. Add a startup validation that warns if the default key is detected
 3. Generate a strong random key on first startup if none is configured
 4. Implement key rotation support
@@ -194,7 +194,7 @@ The frontend stores the JWT access token in browser localStorage. This is a comm
 **Rating**: HIGH
 **CVE Pattern**: CWE-799 (Improper Control of Interaction Frequency)
 
-There is no rate limiting middleware configured anywhere in the application. The login endpoint is particularly vulnerable — an attacker can attempt unlimited password guesses against the admin account without any throttling.
+There is no rate limiting middleware configured anywhere in the application. The login endpoint is particularly vulnerable â€” an attacker can attempt unlimited password guesses against the admin account without any throttling.
 
 **Evidence**: No rate limiting imports or middleware in `main.py` or `config.py`. The PROJECT_STATE.md mentions "Rate limiting on API endpoints" as a completed feature, but no rate limiting implementation exists in the codebase.
 
@@ -228,7 +228,7 @@ async def websocket_endpoint(websocket: WebSocket):
     # No authentication check
 ```
 
-**Impact**: Information disclosure — an attacker can monitor all cluster activity in real time. This reveals cluster topology, worker status, job submissions and completion, and potentially sensitive data.
+**Impact**: Information disclosure â€” an attacker can monitor all cluster activity in real time. This reveals cluster topology, worker status, job submissions and completion, and potentially sensitive data.
 
 **Recommendation**:
 1. Require a valid JWT token as a query parameter on WebSocket connection (`/ws?token=...`)
@@ -245,8 +245,8 @@ async def websocket_endpoint(websocket: WebSocket):
 
 Several API endpoints return detailed error messages that leak internal implementation details:
 
-- `backend/app/api/v1/workers.py:37`: `raise HTTPException(status_code=500, detail=str(e))` — leaks raw exception messages
-- `backend/app/api/v1/workers.py:63`: `raise HTTPException(status_code=404, detail=str(e))` — leaks "Worker X not found" which can be used for enumeration
+- `backend/app/api/v1/workers.py:37`: `raise HTTPException(status_code=500, detail=str(e))` â€” leaks raw exception messages
+- `backend/app/api/v1/workers.py:63`: `raise HTTPException(status_code=404, detail=str(e))` â€” leaks "Worker X not found" which can be used for enumeration
 - `backend/app/api/v1/plugins.py:37`: Returns validation error details that may reveal file paths
 - `backend/app/api/v1/repositories.py:43`: Returns full repository path (may leak internal file system structure)
 
@@ -272,7 +272,7 @@ except Exception as e:
 **Rating**: CRITICAL
 **CVE Pattern**: CWE-434 (Unrestricted Upload of File with Dangerous Type)
 
-The plugin upload endpoint accepts a ZIP file and extracts it to the plugins directory. The extracted Python files are then loaded and executed via `importlib.import_module()`. There is no validation of the ZIP contents before extraction — an attacker can upload a ZIP containing arbitrary Python code that will be executed on the master server.
+The plugin upload endpoint accepts a ZIP file and extracts it to the plugins directory. The extracted Python files are then loaded and executed via `importlib.import_module()`. There is no validation of the ZIP contents before extraction â€” an attacker can upload a ZIP containing arbitrary Python code that will be executed on the master server.
 
 Additionally, the `PluginLoader.load_plugin()` method at `plugins/loader/service.py:22-24` inserts the plugin directory into `sys.path` and imports the entry point module, executing any code in that module.
 
@@ -347,7 +347,7 @@ There is no CSRF protection on any API endpoint. While the frontend uses JWT tok
 
 CORS restrictions mitigate this for browser-based attacks, but they do not protect native API clients.
 
-**Impact**: Limited — CORS mitigates browser-based CSRF risks. However, native applications and non-browser HTTP clients are not protected.
+**Impact**: Limited â€” CORS mitigates browser-based CSRF risks. However, native applications and non-browser HTTP clients are not protected.
 
 **Recommendation**:
 1. Add CSRF tokens for browser-based authentication flows
@@ -370,7 +370,7 @@ The JWT algorithm is configured as `HS256`, which is acceptable, but there is no
 algorithm: str = "HS256"
 ```
 
-**Impact**: Low — HS256 is still secure when used with a strong, random key. The real risk is the hardcoded secret (Finding 1), not the algorithm choice.
+**Impact**: Low â€” HS256 is still secure when used with a strong, random key. The real risk is the hardcoded secret (Finding 1), not the algorithm choice.
 
 **Recommendation**:
 1. Consider supporting RS256 for token signing
@@ -436,7 +436,7 @@ if regex and pattern:
 **Rating**: HIGH
 **CVE Pattern**: CWE-319 (Cleartext Transmission of Sensitive Information)
 
-The application runs on plain HTTP by default. All API traffic — including JWT tokens, job payloads, repository data, and AI prompts — is transmitted in cleartext over the network.
+The application runs on plain HTTP by default. All API traffic â€” including JWT tokens, job payloads, repository data, and AI prompts â€” is transmitted in cleartext over the network.
 
 **Evidence**:
 ```python
@@ -463,11 +463,11 @@ port: int = 8000
 
 Several endpoints accept free-form `dict` input without schema validation:
 
-- `backend/app/api/v1/workflows.py:20`: `data: dict` — no schema, accepts arbitrary JSON
-- `backend/app/api/v1/agents.py:20`: `data: dict` — no schema
-- `backend/app/api/v1/engineering.py:21`: `data: dict` — no schema
-- `backend/app/api/v1/ai.py:21`: `data: dict` — no schema, used for chat input
-- `backend/app/api/v1/studio/layout.py`: `data: dict` — no schema
+- `backend/app/api/v1/workflows.py:20`: `data: dict` â€” no schema, accepts arbitrary JSON
+- `backend/app/api/v1/agents.py:20`: `data: dict` â€” no schema
+- `backend/app/api/v1/engineering.py:21`: `data: dict` â€” no schema
+- `backend/app/api/v1/ai.py:21`: `data: dict` â€” no schema, used for chat input
+- `backend/app/api/v1/studio/layout.py`: `data: dict` â€” no schema
 
 **Evidence**:
 ```python
@@ -507,16 +507,16 @@ async def create_workflow(data: dict, db: AsyncSession = Depends(get_db)):
 | 15 | SQL injection risk | repository/search/service.py | MEDIUM |
 | 17 | No input validation | workflows.py, agents.py, etc. | MEDIUM |
 | 13 | Weak cipher | config.py:15 | LOW |
-| 12 | No CSRF | — | LOW |
+| 12 | No CSRF | â€” | LOW |
 
 ## Overall Security Assessment
 
 The AICluster codebase has 4 CRITICAL, 5 HIGH, 6 MEDIUM, and 2 LOW findings. The most urgent issues are:
 
-1. **No authentication on API endpoints** — every endpoint is publicly accessible
-2. **JWT secret is hardcoded** — tokens can be forged trivially
-3. **Default admin credentials** — the default admin account uses well-known credentials
-4. **Plugin upload RCE** — arbitrary code execution via ZIP upload
+1. **No authentication on API endpoints** â€” every endpoint is publicly accessible
+2. **JWT secret is hardcoded** â€” tokens can be forged trivially
+3. **Default admin credentials** â€” the default admin account uses well-known credentials
+4. **Plugin upload RCE** â€” arbitrary code execution via ZIP upload
 
 These findings indicate that the application has no effective access control in its current state. The JWT authentication system is architecturally well-designed but is never actually applied to endpoints. This represents a significant disconnect between the security architecture and its usage.
 

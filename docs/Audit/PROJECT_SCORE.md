@@ -1,33 +1,33 @@
-# PROJECT SCORE — AICluster v1.3.0
+﻿# PROJECT SCORE â€” AICluster v2.0.0
 
 ## Scoring Methodology
 
-Each dimension is scored 1-10 (10 = best). Scores reflect the current state of the codebase at v1.3.0, considering both the implementation quality and the completeness relative to the project's stated goals. Weighted scoring accounts for relative importance to the project's success.
+Each dimension is scored 1-10 (10 = best). Scores reflect the current state of the codebase at v2.0.0, considering both the implementation quality and the completeness relative to the project's stated goals. Weighted scoring accounts for relative importance to the project's success.
 
 ---
 
-## 1. Architecture (Score: 8.5/10 — Weight: 15%)
+## 1. Architecture (Score: 8.5/10 â€” Weight: 15%)
 
 ### Strengths
 - Clean monorepo structure with clear separation: backend/, worker/, frontend/, studio/, shared/
 - Domain-driven module organization within backend (api/, models/, services/, websocket/, workflow/, repository/, ai/, agents/, plugins/, engineering/, production/, audit/)
-- Consistent layering: API routes → Services → Models/Database, with no circular import chains in the main flow
+- Consistent layering: API routes â†’ Services â†’ Models/Database, with no circular import chains in the main flow
 - Lifespan-based application lifecycle management using FastAPI's modern lifespan context manager
 - Asynchronous throughout: FastAPI async handlers, async SQLAlchemy sessions, async WebSocket, async plugin loading
-- State machine pattern for worker lifecycle (STARTING → CONNECTING → REGISTERING → ONLINE → HEARTBEAT → POLL_JOB → EXECUTING)
+- State machine pattern for worker lifecycle (STARTING â†’ CONNECTING â†’ REGISTERING â†’ ONLINE â†’ HEARTBEAT â†’ POLL_JOB â†’ EXECUTING)
 - Event-driven architecture: WebSocket broadcasts, EventBus for audit events, plugin hook system
-- Provider-agnostic interfaces: ModelProvider base class, BaseJobHandler, Plugin class — all designed for extensibility
+- Provider-agnostic interfaces: ModelProvider base class, BaseJobHandler, Plugin class â€” all designed for extensibility
 - Offline-first design is not bolted on but baked into every architectural decision
-- Service layer is stateless by design — services accept db sessions, enabling request-scoped transactions
+- Service layer is stateless by design â€” services accept db sessions, enabling request-scoped transactions
 
 ### Weaknesses
-- No formal dependency injection framework — services are instantiated manually (or via Depends) which works but does not scale well
+- No formal dependency injection framework â€” services are instantiated manually (or via Depends) which works but does not scale well
 - Some cross-package imports that violate strict layering (e.g., api/v1/ai.py imports directly from ai/providers/ollama.py)
-- No interface repository — SQLAlchemy sessions are passed directly to services, coupling business logic to the ORM
-- Missing abstract service interfaces — there is no Service ABC, making it hard to mock for testing
+- No interface repository â€” SQLAlchemy sessions are passed directly to services, coupling business logic to the ORM
+- Missing abstract service interfaces â€” there is no Service ABC, making it hard to mock for testing
 - The production/health, production/monitoring, and production/diagnostics services are mostly empty shells
 - Several __init__.py files in production/, ai/, agents/ are completely empty, suggesting incomplete implementation
-- No clean separation between write models and read models — the same SQLAlchemy models serve both purposes
+- No clean separation between write models and read models â€” the same SQLAlchemy models serve both purposes
 
 ### Future Improvements
 - Introduce a lightweight DI container (e.g., dependency-injector) 
@@ -38,15 +38,15 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 2. Maintainability (Score: 7.5/10 — Weight: 10%)
+## 2. Maintainability (Score: 7.5/10 â€” Weight: 10%)
 
 ### Strengths
 - Consistent naming conventions: snake_case for Python files/variables, PascalCase for classes, UPPER_CASE for constants
 - Clear file organization: one class/concern per file in most cases
-- Type annotations throughout — every function signature is typed, models use Mapped[] notation
+- Type annotations throughout â€” every function signature is typed, models use Mapped[] notation
 - Small, focused files in services/ (auth.py: 98 lines, worker_manager.py: 156 lines, scheduler.py: 214 lines)
 - Logging is configured centrally and used consistently across all modules
-- No long methods (>100 lines) in the core code — most methods are 10-30 lines
+- No long methods (>100 lines) in the core code â€” most methods are 10-30 lines
 - Pydantic schemas centralize validation logic separately from business logic
 - Changelog is comprehensive and well-structured, making it easy to track project evolution
 
@@ -56,7 +56,7 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 - No code formatter configuration (no pyproject.toml with black/isort/ruff settings visible)
 - No pre-commit hooks configured
 - Some dead code: unused imports in multiple files (see CODE_REVIEW.md)
-- Schema definitions in schemas/__init__.py are mixed with routes — no separation of request vs response schemas
+- Schema definitions in schemas/__init__.py are mixed with routes â€” no separation of request vs response schemas
 - Several placeholder directories with only __init__.py (production/benchmark, production/deployment, production/audit, production/security, ai/metrics, ai/streaming, ai/memory)
 - Test coverage is present but sparse for the advanced modules (workflow, ai, agents, engineering have no dedicated tests)
 
@@ -69,10 +69,10 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 3. Scalability (Score: 6.0/10 — Weight: 10%)
+## 3. Scalability (Score: 6.0/10 â€” Weight: 10%)
 
 ### Strengths
-- Horizontal worker scaling: adding workers requires no master reconfiguration — workers auto-register
+- Horizontal worker scaling: adding workers requires no master reconfiguration â€” workers auto-register
 - Job queue with priority-based scheduling enables fair resource allocation across workloads
 - WebSocket manager supports up to 100 concurrent connections with rejection at limit
 - Worker statelessness: workers can come and go without affecting cluster state
@@ -81,15 +81,15 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 - Artifact storage is file-based and content-addressable, avoiding database bloat for large outputs
 
 ### Weaknesses
-- SQLite is the single database — as the project grows beyond 100 workers, write contention on SQLite will become a bottleneck
+- SQLite is the single database â€” as the project grows beyond 100 workers, write contention on SQLite will become a bottleneck
 - Single-process master: the FastAPI application runs as a single uvicorn worker. No horizontal scaling of the master itself
 - No database connection pooling beyond aiosqlite's single connection
-- The offline checker runs on a 10-second loop — at 100+ workers, iterating through all workers every 10 seconds adds overhead
-- WebSocket broadcasts iterate all connections sequentially — no fan-out optimization
+- The offline checker runs on a 10-second loop â€” at 100+ workers, iterating through all workers every 10 seconds adds overhead
+- WebSocket broadcasts iterate all connections sequentially â€” no fan-out optimization
 - The heartbeat system processes each heartbeat individually instead of batching
 - No sharding, read replicas, or any horizontal data partitioning strategy
 - Job scheduling uses a simple poll-and-assign loop with no backpressure mechanism
-- The _process_queue method fetches ALL queued jobs before assigning — this does not scale past a few hundred queued jobs
+- The _process_queue method fetches ALL queued jobs before assigning â€” this does not scale past a few hundred queued jobs
 
 ### Future Improvements
 - Add PostgreSQL support as an alternative to SQLite for larger deployments
@@ -101,7 +101,7 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 4. Security (Score: 5.5/10 — Weight: 10%)
+## 4. Security (Score: 5.5/10 â€” Weight: 10%)
 
 ### Strengths
 - JWT authentication with bcrypt password hashing
@@ -113,18 +113,18 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 - Password hashing uses bcrypt with auto-detection of deprecated schemes
 
 ### Weaknesses
-- JWT secret key is hardcoded in config.py: "aicluster-secret-key-change-in-production" — easily guessable
+- JWT secret key is hardcoded in config.py: "aicluster-secret-key-change-in-production" â€” easily guessable
 - Default admin credentials (admin/admin123) are well-known
-- No authentication required on most API endpoints — get_current_user is available but used on zero endpoints
+- No authentication required on most API endpoints â€” get_current_user is available but used on zero endpoints
 - localStorage JWT token storage is vulnerable to XSS attacks
-- No rate limiting on login endpoint — brute force attacks are trivial
+- No rate limiting on login endpoint â€” brute force attacks are trivial
 - WebSocket endpoint (/ws) has no authentication at all
-- Plugin upload endpoint accepts arbitrary ZIP files — potential RCE via path traversal or malicious code
-- No HTTPS in the default configuration — all traffic is plain HTTP
+- Plugin upload endpoint accepts arbitrary ZIP files â€” potential RCE via path traversal or malicious code
+- No HTTPS in the default configuration â€” all traffic is plain HTTP
 - No CSRF protection
 - No API key rotation mechanism
 - The CORS configuration uses allow_credentials=True with allow_origins="*" equivalent (the split config allows any origin)
-- Worker HTTP client sends no authentication tokens — any machine on the LAN can interact with the workers API
+- Worker HTTP client sends no authentication tokens â€” any machine on the LAN can interact with the workers API
 
 ### Future Improvements
 - Implement mandatory authentication on ALL endpoints via a global middleware
@@ -138,13 +138,13 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 5. Performance (Score: 7.0/10 — Weight: 10%)
+## 5. Performance (Score: 7.0/10 â€” Weight: 10%)
 
 ### Strengths
 - Async I/O throughout eliminates thread/process overhead
 - Database indexes on all commonly-queried columns and composite indexes on join patterns
-- Lazy engine initialization via get_engine() — no database connection until first request
-- WebSocket broadcasts are non-blocking — failures in one connection do not affect others
+- Lazy engine initialization via get_engine() â€” no database connection until first request
+- WebSocket broadcasts are non-blocking â€” failures in one connection do not affect others
 - SQLite with WAL mode (implicit via aiosqlite) provides concurrent read performance
 - Job priority sorting happens at the database level, not in application code
 - Dashboard aggregation uses SQL aggregate functions (count, avg) rather than loading all rows
@@ -153,15 +153,15 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 - Ping/pong WebSocket support keeps connections alive without unnecessary message overhead
 
 ### Weaknesses
-- Dashboard uses 2-second polling from frontend — this creates unnecessary load for real-time updates
+- Dashboard uses 2-second polling from frontend â€” this creates unnecessary load for real-time updates
 - Heartbeat processing on every heartbeat (every 5 seconds per worker) with separate DB write
 - The offline checker queries all workers and creates individual log entries for each offline detection
 - No query result caching at the API or service layer
 - Repository text search reads file contents into memory line by line rather than using indexed search
-- The _process_queue scheduler loop fetches all queued jobs and iterates them sequentially — O(n) per tick
+- The _process_queue scheduler loop fetches all queued jobs and iterates them sequentially â€” O(n) per tick
 - No pagination on /jobs, /workers, /logs when called without limit/offset
-- The search service's search_text method opens files sequentially and reads line-by-line — very slow for large repositories
-- No connection pooling for HTTP clients in the worker — a new httpx.AsyncClient is created per WorkerHttpClient but never reused across registrations
+- The search service's search_text method opens files sequentially and reads line-by-line â€” very slow for large repositories
+- No connection pooling for HTTP clients in the worker â€” a new httpx.AsyncClient is created per WorkerHttpClient but never reused across registrations
 
 ### Future Improvements
 - Replace polling with Server-Sent Events or WebSocket push for dashboard
@@ -173,13 +173,13 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 6. Testing (Score: 6.5/10 — Weight: 10%)
+## 6. Testing (Score: 6.5/10 â€” Weight: 10%)
 
 ### Strengths
 - 44 backend pytest unit + edge case tests, all passing
 - 14 worker unit tests (config, executor, registrar, reconnect), all passing
 - 40 end-to-end integration tests, all passing
-- Isolated temp-file database per test session — no shared state
+- Isolated temp-file database per test session â€” no shared state
 - Tests cover: auth (login, invalid credentials, missing fields, malformed JSON), validation (missing fields, empty values, out-of-range, duplicate registration), worker CRUD, job CRUD, dashboard aggregation, logging pipeline
 - Test files are organized by domain (test_auth.py, test_workers.py, test_jobs.py, test_dashboard.py, test_health.py, test_validation.py)
 - conftest.py provides fixtures for database setup and teardown
@@ -189,7 +189,7 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 - No tests for the advanced modules: workflow, repository, ai, agents, engineering, plugins, audit, studio
 - No tests for the WebSocket manager
 - No tests for worker handler execution (echo, sleep, dir_scan, hash_file, count_files)
-- No mock-based tests — all backend tests hit a real SQLite database
+- No mock-based tests â€” all backend tests hit a real SQLite database
 - No test coverage reporting configured
 - Integration tests use a single monolithic script (run-integration-test.py) rather than a structured test suite
 - No frontend tests (no Jest/Vitest configuration in the frontend)
@@ -209,13 +209,13 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 7. Documentation (Score: 7.0/10 — Weight: 5%)
+## 7. Documentation (Score: 7.0/10 â€” Weight: 5%)
 
 ### Strengths
 - README.md provides clear quick-start instructions with architecture diagram
 - VISION.md articulates the project purpose, core features, non-goals, and architectural principles
 - PROJECT_STATE.md provides comprehensive status including API endpoints, database tables, dependencies, known issues, and technical debt
-- CHANGELOG.md is thorough — every version has detailed additions, changes, fixes, and removals with API endpoints listed
+- CHANGELOG.md is thorough â€” every version has detailed additions, changes, fixes, and removals with API endpoints listed
 - Architecture documentation in docs/Architecture/
 - Deployment documentation in docs/Deployment/
 - Development documentation in docs/Development/
@@ -229,7 +229,7 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 - No developer onboarding guide (how to set up a development environment, run tests, add a new module)
 - No plugin development guide (how to write, test, and package a plugin)
 - No architecture decision records (ADRs) explaining why specific technical decisions were made
-- Inline comments are sparse — many complex functions have no docstrings or explanatory comments
+- Inline comments are sparse â€” many complex functions have no docstrings or explanatory comments
 - No contribution guidelines (CONTRIBUTING.md)
 - No code of conduct
 - README does not mention the advanced features (AI Runtime, Repository Intelligence, Multi-Agent, Engineering Engine, Studio)
@@ -246,7 +246,7 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 8. Build System (Score: 7.5/10 — Weight: 5%)
+## 8. Build System (Score: 7.5/10 â€” Weight: 5%)
 
 ### Strengths
 - build/ directory contains a complete build system with modular components: build.py, package.py, sign.py, checksum.py, clean.py, verify.py
@@ -263,13 +263,13 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ### Weaknesses
 - No CI/CD configuration in the repository (no GitHub Actions, GitLab CI, or Jenkinsfile)
-- Build system requires manual execution — no npm run build equivalent for the full stack
+- Build system requires manual execution â€” no npm run build equivalent for the full stack
 - PyInstaller builder may have compatibility issues with newer Python versions
 - No Dockerfile for containerized deployment
 - No reproducible build verification
 - Build scripts have no tests
 - The Tauri builder references configurations that may not exist in all environments
-- No build caching — rebuilding from scratch every time
+- No build caching â€” rebuilding from scratch every time
 
 ### Future Improvements
 - Add GitHub Actions workflow for CI/CD
@@ -280,10 +280,10 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 9. Release System (Score: 6.0/10 — Weight: 5%)
+## 9. Release System (Score: 6.0/10 â€” Weight: 5%)
 
 ### Strengths
-- Version managed through VERSION file and CHANGELOG — single source of truth
+- Version managed through VERSION file and CHANGELOG â€” single source of truth
 - Release script (release.py) automates version bumping and packaging
 - Checksum generation ensures artifact integrity
 - Sign script for code signing on Windows
@@ -292,9 +292,9 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 - Release checklist available in docs/
 
 ### Weaknesses
-- No automated release pipeline — releases are manual
+- No automated release pipeline â€” releases are manual
 - No semantic versioning enforcement (the version jumped from 0.2.0 to 1.3.0 without clear semver justification)
-- No changelog automation — changelog entries are manually maintained
+- No changelog automation â€” changelog entries are manually maintained
 - No release branch strategy defined
 - No artifact repository configured (no place to store release artifacts)
 - No automated deployment to target machines
@@ -311,16 +311,16 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 10. Code Quality (Score: 7.5/10 — Weight: 10%)
+## 10. Code Quality (Score: 7.5/10 â€” Weight: 10%)
 
 ### Strengths
 - Consistent use of modern Python features: type hints, async/await, dataclasses/Pydantic, enums
-- No global mutable state in services — each service is instantiated with its dependencies
+- No global mutable state in services â€” each service is instantiated with its dependencies
 - Error handling is generally consistent: try/except with specific exception types, HTTPException for API errors
 - Database operations use proper async context managers
 - SQLAlchemy models use proper column types, indexes, and relationships
 - All API responses are typed via Pydantic models
-- No evidence of SQL injection vulnerabilities — all queries use parameterized SQLAlchemy
+- No evidence of SQL injection vulnerabilities â€” all queries use parameterized SQLAlchemy
 - No eval/exec usage in application code
 - Consistent UUID generation for primary keys
 - Proper use of Python's datetime with timezone awareness
@@ -333,8 +333,8 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 - The scheduler's `complete_job` method has a dead statement `pass` at line 192 where `duration_ms` is captured but never stored
 - Several places use broad `except Exception` without logging the exception details
 - The Auditing middleware constructs AuditEvent directly rather than using AuditService's public API
-- Some Pydantic models use `model_dump()` while others use `dict()` — inconsistent
-- The worker's HTTP client has no retry logic built-in — retry is handled externally by RetryHandler
+- Some Pydantic models use `model_dump()` while others use `dict()` â€” inconsistent
+- The worker's HTTP client has no retry logic built-in â€” retry is handled externally by RetryHandler
 - No pre-commit hooks, no lint enforcement in CI
 
 ### Future Improvements
@@ -347,14 +347,14 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 11. Developer Experience (Score: 6.5/10 — Weight: 5%)
+## 11. Developer Experience (Score: 6.5/10 â€” Weight: 5%)
 
 ### Strengths
 - Quick start works with two commands: pip install + uvicorn for backend, npm install + npm run dev for frontend
 - Auto-generated OpenAPI documentation at /docs and /redoc
 - Type hints throughout make IDE autocompletion effective
 - Consistent module structure makes finding code intuitive
-- No complex build tooling — Python virtualenv + npm is sufficient for development
+- No complex build tooling â€” Python virtualenv + npm is sufficient for development
 - Hot reload: uvicorn --reload and next dev provide fast feedback loops
 - Test suite can be run with a single pytest command
 - Default admin account for immediate testing
@@ -362,7 +362,7 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ### Weaknesses
 - No devcontainer configuration for reproducible development environments
-- No Makefile or task runner — developers must know the exact commands
+- No Makefile or task runner â€” developers must know the exact commands
 - No dependency lock files (requirements.txt is hand-maintained, no pip freeze output)
 - No pre-configured debugger launch configurations (no .vscode/launch.json)
 - The monorepo structure lacks a top-level package.json or pyproject.toml for workspace orchestration
@@ -381,7 +381,7 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 12. User Experience (Score: 7.0/10 — Weight: 5%)
+## 12. User Experience (Score: 7.0/10 â€” Weight: 5%)
 
 ### Strengths
 - Dark glassmorphism theme is visually polished and consistent
@@ -417,7 +417,7 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 13. AI Integration (Score: 7.5/10 — Weight: 5%)
+## 13. AI Integration (Score: 7.5/10 â€” Weight: 5%)
 
 ### Strengths
 - Clean ModelProvider interface with load, unload, generate, stream, token_count, health methods
@@ -434,9 +434,9 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 - Streaming support architecture (providers implement stream(), streaming module exists)
 
 ### Weaknesses
-- AI Runtime returns placeholder responses for chat — actual LLM integration is lazy-loaded on /chat/llm
-- No streaming implementation in the frontend — responses are returned as complete blocks
-- No model download management — users must install models manually
+- AI Runtime returns placeholder responses for chat â€” actual LLM integration is lazy-loaded on /chat/llm
+- No streaming implementation in the frontend â€” responses are returned as complete blocks
+- No model download management â€” users must install models manually
 - No GPU detection or hardware capability reporting
 - No token usage tracking at the session level
 - The context optimizer (context/optimizer.py) exists but is not integrated into the main chat flow
@@ -457,7 +457,7 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 14. Plugins (Score: 7.0/10 — Weight: 5%)
+## 14. Plugins (Score: 7.0/10 â€” Weight: 5%)
 
 ### Strengths
 - Complete plugin lifecycle: install, validate, load, initialize, register hooks, run, pause, resume, unload, uninstall
@@ -474,17 +474,17 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 - Plugin sandbox architecture defined (file/network/tool/memory/CPU restrictions) though implementation is partial
 
 ### Weaknesses
-- Plugin sandbox is designed but not fully implemented — plugins run with full Python process permissions
-- No plugin isolation — a plugin can import and modify any Python module
+- Plugin sandbox is designed but not fully implemented â€” plugins run with full Python process permissions
+- No plugin isolation â€” a plugin can import and modify any Python module
 - No plugin version conflict resolution
 - Plugin dependencies are declared but not automatically resolved
 - No plugin testing framework
-- Single example plugin only — no real-world plugin demonstrating complex functionality
-- Plugin unload is fragile — removing modules from sys.modules does not guarantee cleanup
+- Single example plugin only â€” no real-world plugin demonstrating complex functionality
+- Plugin unload is fragile â€” removing modules from sys.modules does not guarantee cleanup
 - No plugin metrics or monitoring
 - Plugin upload has no size limit, no virus scanning, no sandbox extraction
 - No plugin marketplace or discovery mechanism
-- Plugin hooks are triggered synchronously in sequence — no parallel hook execution
+- Plugin hooks are triggered synchronously in sequence â€” no parallel hook execution
 
 ### Future Improvements
 - Implement plugin sandbox with subprocess isolation
@@ -496,10 +496,10 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 15. Workers (Score: 7.5/10 — Weight: 10%)
+## 15. Workers (Score: 7.5/10 â€” Weight: 10%)
 
 ### Strengths
-- Complete worker lifecycle: STARTING → LOADING_CONFIG → CONNECTING → REGISTERING → ONLINE → HEARTBEAT → POLL_JOB → EXECUTING
+- Complete worker lifecycle: STARTING â†’ LOADING_CONFIG â†’ CONNECTING â†’ REGISTERING â†’ ONLINE â†’ HEARTBEAT â†’ POLL_JOB â†’ EXECUTING
 - Exponential backoff retry on connection failure (1, 2, 5, 10, 30, 60 seconds)
 - 5 built-in job handlers demonstrating the handler pattern: echo, sleep, dir_scan, hash_file, count_files
 - Progress reporting with configurable thresholds (every 5% or every 5 seconds)
@@ -515,16 +515,16 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 - Clean FastAPI lifespan pattern
 
 ### Weaknesses
-- No CPU throttling implementation — workers report resource usage but do not enforce the 25% CPU limit
-- No RAM limit enforcement — workers report RAM usage but can exceed the 8GB limit
-- No user activity detection — auto-pause/resume based on user activity is not implemented
-- No process priority management — workers do not set BELOW_NORMAL priority
-- All job handlers use blocking IO (os.walk, open, hashlib) in async event loop — no use of asyncio.to_thread or run_in_executor
-- No worker self-update mechanism — workers must be updated manually
+- No CPU throttling implementation â€” workers report resource usage but do not enforce the 25% CPU limit
+- No RAM limit enforcement â€” workers report RAM usage but can exceed the 8GB limit
+- No user activity detection â€” auto-pause/resume based on user activity is not implemented
+- No process priority management â€” workers do not set BELOW_NORMAL priority
+- All job handlers use blocking IO (os.walk, open, hashlib) in async event loop â€” no use of asyncio.to_thread or run_in_executor
+- No worker self-update mechanism â€” workers must be updated manually
 - No worker metrics reported beyond resource usage (no job throughput, no error rates)
-- Worker-to-master communication has no authentication — anyone on the LAN can register as a worker or submit jobs
+- Worker-to-master communication has no authentication â€” anyone on the LAN can register as a worker or submit jobs
 - The monitor service (worker/app/services/monitor.py) references psutil.sensors_temperatures which may not exist on all Windows machines
-- No worker-side caching — every job poll hits the master API
+- No worker-side caching â€” every job poll hits the master API
 
 ### Future Improvements
 - Implement CPU throttling via Windows job objects or psutil process priority
@@ -537,10 +537,10 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 16. Repository Intelligence (Score: 7.5/10 — Weight: 5%)
+## 16. Repository Intelligence (Score: 7.5/10 â€” Weight: 5%)
 
 ### Strengths
-- Complete scanning pipeline: repository registration → file scanning → symbol parsing → indexing → knowledge graph
+- Complete scanning pipeline: repository registration â†’ file scanning â†’ symbol parsing â†’ indexing â†’ knowledge graph
 - 18 database tables covering all repository entities
 - Language detection for 20+ languages
 - Python AST parser for deep symbol extraction (classes, functions, async functions, variables, decorators, annotations)
@@ -558,16 +558,16 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 - WebSocket broadcasts for repository events
 
 ### Weaknesses
-- Only Python has a true AST parser — TypeScript/JS and other languages use regex-based parsing which is fragile
-- Text search reads entire file contents into memory — no search index (no FTS5, no Elasticsearch)
-- No git integration — the scanner works on the file system, not on git history
+- Only Python has a true AST parser â€” TypeScript/JS and other languages use regex-based parsing which is fragile
+- Text search reads entire file contents into memory â€” no search index (no FTS5, no Elasticsearch)
+- No git integration â€” the scanner works on the file system, not on git history
 - No support for monorepo-specific patterns (workspace detection, package-based boundaries)
-- No incremental scan at the file level — rescan deletes ALL data and re-indexes
+- No incremental scan at the file level â€” rescan deletes ALL data and re-indexes
 - The knowledge graph is generated but no higher-level reasoning is applied (no concept extraction, no pattern detection)
 - No support for binary file analysis (no .NET, no compiled language support)
 - No remote repository support (no GitHub, GitLab, Azure DevOps integration)
 - The search service's search_text method has no caching and will be very slow on large repositories
-- No query optimization — symbol search uses ILIKE which cannot use standard B-tree indexes efficiently
+- No query optimization â€” symbol search uses ILIKE which cannot use standard B-tree indexes efficiently
 
 ### Future Improvements
 - Add tree-sitter-based parsing for accurate multi-language symbol extraction
@@ -579,7 +579,7 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 
 ---
 
-## 17. Workflow Engine (Score: 7.5/10 — Weight: 10%)
+## 17. Workflow Engine (Score: 7.5/10 â€” Weight: 10%)
 
 ### Strengths
 - Complete workflow lifecycle: create, plan, dispatch, execute, retry, cancel, pause, resume
@@ -598,17 +598,17 @@ Each dimension is scored 1-10 (10 = best). Scores reflect the current state of t
 - Workflow history and queue statistics
 
 ### Weaknesses
-- The executor engine (workflow/executor/engine.py) orchestrates but actual task execution delegates to workers — no built-in task execution
-- No workflow timeout mechanism — a stuck workflow runs forever
+- The executor engine (workflow/executor/engine.py) orchestrates but actual task execution delegates to workers â€” no built-in task execution
+- No workflow timeout mechanism â€” a stuck workflow runs forever
 - No workflow-level error handling beyond per-task retries
 - The dispatcher assigns tasks to workers but does not track worker capacity (a worker can be assigned multiple tasks)
-- No parallel task execution within a worker — each worker executes one task at a time
-- No SLA tracking — no expected completion time estimation
-- No workflow templates — every workflow is defined from scratch
+- No parallel task execution within a worker â€” each worker executes one task at a time
+- No SLA tracking â€” no expected completion time estimation
+- No workflow templates â€” every workflow is defined from scratch
 - The pause/resume mechanism is simple status flipping with no state persistence
-- No workflow versioning — once created, a workflow definition is immutable
-- Artifact storage uses the local filesystem — no distributed storage
-- Cache service has TTL but no LRU eviction — cache can grow unbounded
+- No workflow versioning â€” once created, a workflow definition is immutable
+- Artifact storage uses the local filesystem â€” no distributed storage
+- Cache service has TTL but no LRU eviction â€” cache can grow unbounded
 
 ### Future Improvements
 - Add workflow timeout with configurable duration
@@ -656,4 +656,4 @@ AICluster scores 7.5/10, placing it in the "solid, production-capable" range. Th
 
 3. **Testing (6.5)**: While core backend tests are solid, the advanced subsystems (workflow, AI, agents, engineering, plugins, audit) have zero test coverage.
 
-The project's strengths — Architecture (8.5), Workers (7.5), Workflow Engine (7.5), and AI Integration (7.5) — reflect the areas that received the most development attention. These modules are well-designed, properly separated, and functionally complete.
+The project's strengths â€” Architecture (8.5), Workers (7.5), Workflow Engine (7.5), and AI Integration (7.5) â€” reflect the areas that received the most development attention. These modules are well-designed, properly separated, and functionally complete.

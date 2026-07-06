@@ -1,22 +1,22 @@
-# AICluster — Build Pipeline Review
+﻿# AICluster â€” Build Pipeline Review
 
 **Version:** 1.2.1  
 **Last Updated:** 2026-07-03  
-**Review Scope:** `build/` directory — full build, packaging, and release pipeline
+**Review Scope:** `build/` directory â€” full build, packaging, and release pipeline
 
 ---
 
 ## Table of Contents
 
 1. [Pipeline Overview](#1-pipeline-overview)
-2. [build.py — Master Orchestrator](#2-buildpy--master-orchestrator)
-3. [pyinstaller_builder.py — Python Binary Builder](#3-pyinstaller_builderpy--python-binary-builder)
-4. [tauri_builder.py — Desktop App Builder](#4-tauri_builderpy--desktop-app-builder)
-5. [setup_builder.py — Installer Builder](#5-setup_builderpy--installer-builder)
-6. [package.py — Release Packaging](#6-packagepy--release-packaging)
-7. [release.py — Installer Scripts & Reports](#7-releasepy--installer-scripts--reports)
-8. [verify.py — Build Verification](#8-verifypy--build-verification)
-9. [clean.py — Artifact Cleanup](#9-cleanpy--artifact-cleanup)
+2. [build.py â€” Master Orchestrator](#2-buildpy--master-orchestrator)
+3. [pyinstaller_builder.py â€” Python Binary Builder](#3-pyinstaller_builderpy--python-binary-builder)
+4. [tauri_builder.py â€” Desktop App Builder](#4-tauri_builderpy--desktop-app-builder)
+5. [setup_builder.py â€” Installer Builder](#5-setup_builderpy--installer-builder)
+6. [package.py â€” Release Packaging](#6-packagepy--release-packaging)
+7. [release.py â€” Installer Scripts & Reports](#7-releasepy--installer-scripts--reports)
+8. [verify.py â€” Build Verification](#8-verifypy--build-verification)
+9. [clean.py â€” Artifact Cleanup](#9-cleanpy--artifact-cleanup)
 10. [Verification Pipeline](#10-verification-pipeline)
 11. [Checksums & Integrity](#11-checksums--integrity)
 12. [Installer Generation](#12-installer-generation)
@@ -34,26 +34,26 @@ The AICluster build system lives entirely in `build/` and is a Python-based prod
 ### Pipeline Stages (In Order)
 
 ```
- 1. Environment Verification  ──►  verify.py (Python, Node, Rust, Tauri, PyInstaller, Inno Setup, etc.)
- 2. Clean Previous Outputs    ──►  clean.py (if --clean)
- 3. Build Frontends           ──►  frontend.py (npm run build for all web UIs)
- 4. Build PyInstaller Targets ──►  pyinstaller_builder.py (master, worker, CLI)
- 5. Build Tauri Targets       ──►  tauri_builder.py (master-control, worker-control, studio)
- 6. Sign Executables          ──►  sign.py (Authenticode — opt-in)
- 7. Pre-Installer Gate        ──►  Verify every .exe is a real Windows PE binary
- 8. Package Release           ──►  package.py (ZIPs, checksums, manifest)
- 9. Build Installer           ──►  setup_builder.py (AIClusterSetup.exe via Inno Setup)
-10. Generate Release Notes    ──►  release.py (build report, RELEASE_NOTES.md)
-11. Final Verification        ──►  verify.py (artifact integrity + release verification suite)
-12. Emit Build Report         ──►  Markdown report + exit code
+ 1. Environment Verification  â”€â”€â–º  verify.py (Python, Node, Rust, Tauri, PyInstaller, Inno Setup, etc.)
+ 2. Clean Previous Outputs    â”€â”€â–º  clean.py (if --clean)
+ 3. Build Frontends           â”€â”€â–º  frontend.py (npm run build for all web UIs)
+ 4. Build PyInstaller Targets â”€â”€â–º  pyinstaller_builder.py (master, worker, CLI)
+ 5. Build Tauri Targets       â”€â”€â–º  tauri_builder.py (master-control, worker-control, studio)
+ 6. Sign Executables          â”€â”€â–º  sign.py (Authenticode â€” opt-in)
+ 7. Pre-Installer Gate        â”€â”€â–º  Verify every .exe is a real Windows PE binary
+ 8. Package Release           â”€â”€â–º  package.py (ZIPs, checksums, manifest)
+ 9. Build Installer           â”€â”€â–º  setup_builder.py (AIClusterSetup.exe via Inno Setup)
+10. Generate Release Notes    â”€â”€â–º  release.py (build report, RELEASE_NOTES.md)
+11. Final Verification        â”€â”€â–º  verify.py (artifact integrity + release verification suite)
+12. Emit Build Report         â”€â”€â–º  Markdown report + exit code
 ```
 
 ### Build Targets
 
 | Target | Type | Output | Size (approx) |
 |--------|------|--------|---------------|
-| Master Server | PyInstaller | `AIClusterMaster.exe` | ~80 MB |
-| Worker Service | PyInstaller | `AIClusterWorker.exe` | ~40 MB |
+| Master Server | PyInstaller | `AIClusterRuntime.exe --mode master` | ~80 MB |
+| Worker Service | PyInstaller | `AIClusterRuntime.exe --mode worker` | ~40 MB |
 | CLI | PyInstaller | `aicluster.exe` | ~10 MB |
 | Master Control Center | Tauri v2 | `MasterControlCenter.exe` | ~8 MB |
 | Worker Control Center | Tauri v2 | `WorkerControlCenter.exe` | ~8 MB |
@@ -62,7 +62,7 @@ The AICluster build system lives entirely in `build/` and is a Python-based prod
 
 ### Key Design Decisions
 
-- **No placeholder executables**: The pipeline has a hard PE gate — every `.exe` must be a real Windows PE or the build aborts. This prevents shipping broken binaries.
+- **No placeholder executables**: The pipeline has a hard PE gate â€” every `.exe` must be a real Windows PE or the build aborts. This prevents shipping broken binaries.
 - **PyInstaller for Python apps**: Master, Worker, and CLI are self-contained EXEs. No Python runtime needed on target machines.
 - **Tauri v2 for desktop apps**: Uses the system WebView. Each desktop app is ~8-12 MB (vs. Electron's ~150 MB).
 - **Inno Setup for installer**: Single-file wizard installer bundles Python 3.12 runtime, VC++ redist, and all AICluster binaries.
@@ -71,7 +71,7 @@ The AICluster build system lives entirely in `build/` and is a Python-based prod
 
 ---
 
-## 2. build.py — Master Orchestrator
+## 2. build.py â€” Master Orchestrator
 
 **File:** `build/build.py` (431 lines)  
 **Role:** Entry point that orchestrates every build stage.  
@@ -103,11 +103,11 @@ All flags are supported: `--clean`, `--skip-verify`, `--verify-only`, `--skip-fr
 - **Comprehensive error/warning tracking**: Two lists (`errors`, `warnings`) accumulate across the entire build and are included in the final report.
 - **CLI flag parity with config**: Every skip flag maps to `BuildConfig` fields. Environment variables (`AICLUSTER_BUILD_*`) also work, enabling CI/CD overrides.
 - **`_verify_executables_gate()`** is a particularly strong design: it checks every required EXE is a real PE before building the installer, preventing a broken installer from being generated.
-- **Version resolution** (`resolve_version()`) chains 4 sources: env var → VERSION file → CHANGELOG.md → hard-coded default.
+- **Version resolution** (`resolve_version()`) chains 4 sources: env var â†’ VERSION file â†’ CHANGELOG.md â†’ hard-coded default.
 
 ### Weaknesses
 
-- **Sequential only**: No parallel stage execution. Building PyInstaller targets sequentially (master → worker → CLI) takes longer than necessary. These are independent.
+- **Sequential only**: No parallel stage execution. Building PyInstaller targets sequentially (master â†’ worker â†’ CLI) takes longer than necessary. These are independent.
 - **No build cache**: Every full build recompiles everything. There is no incremental build support (e.g., skip Tauri if its frontend hasn't changed).
 - **Error collection is append-only**: If a stage succeeds on retry (e.g., user fixes a tool path), previous errors remain in the list.
 - **No build graph**: The `_step()` logging is linear; there is no DAG or dependency graph representing stage relationships.
@@ -120,7 +120,7 @@ All flags are supported: `--clean`, `--skip-verify`, `--verify-only`, `--skip-fr
 
 ---
 
-## 3. pyinstaller_builder.py — Python Binary Builder
+## 3. pyinstaller_builder.py â€” Python Binary Builder
 
 **File:** `build/pyinstaller_builder.py` (402 lines)  
 **Role:** Compiles Python applications into self-contained Windows executables.  
@@ -130,9 +130,9 @@ All flags are supported: `--clean`, `--skip-verify`, `--verify-only`, `--skip-fr
 
 Generates `.spec` files and runs PyInstaller to produce three executables:
 
-1. **AIClusterMaster.exe** — Full FastAPI backend with all subsystems (AI, Workflow, Agents, Repository, Engineering, Audit, Plugins). Uses `--collect-all` for `fastapi`, `uvicorn`, `pydantic`, `sqlalchemy`, `aiosqlite`, `alembic`, `jose`, `passlib`, `bcrypt`, `httpx`, `anyio`, `starlette`, `websockets`, `python_multipart`, `sniffio`.
-2. **AIClusterWorker.exe** — Worker agent with FastAPI health endpoint, job executor, and monitoring. Uses `--collect-all` for `uvicorn`, `psutil`, `httpx`.
-3. **aicluster.exe** — CLI tool with `httpx` and `rich`.
+1. **AIClusterRuntime.exe --mode master** â€” Full FastAPI backend with all subsystems (AI, Workflow, Agents, Repository, Engineering, Audit, Plugins). Uses `--collect-all` for `fastapi`, `uvicorn`, `pydantic`, `sqlalchemy`, `aiosqlite`, `alembic`, `jose`, `passlib`, `bcrypt`, `httpx`, `anyio`, `starlette`, `websockets`, `python_multipart`, `sniffio`.
+2. **AIClusterRuntime.exe --mode worker** â€” Worker agent with FastAPI health endpoint, job executor, and monitoring. Uses `--collect-all` for `uvicorn`, `psutil`, `httpx`.
+3. **aicluster.exe** â€” CLI tool with `httpx` and `rich`.
 
 ### Key Design Decisions
 
@@ -162,7 +162,7 @@ def _pyinstaller_outputs(target) -> List[Path]:
 - Clean distinction between the two build paths (CLI `--collect-all` vs. spec file).
 - Comprehensive hidden imports list prevents runtime import errors.
 - Version info generation is correct and thorough.
-- No placeholder fallback — if PyInstaller fails or doesn't produce output, the build correctly raises `RuntimeError`.
+- No placeholder fallback â€” if PyInstaller fails or doesn't produce output, the build correctly raises `RuntimeError`.
 - `_resolve_pyinstaller()` checks both PATH and `python -m PyInstaller`, handling edge cases.
 
 ### Weaknesses
@@ -174,7 +174,7 @@ def _pyinstaller_outputs(target) -> List[Path]:
 
 ---
 
-## 4. tauri_builder.py — Desktop App Builder
+## 4. tauri_builder.py â€” Desktop App Builder
 
 **File:** `build/tauri_builder.py` (389 lines)  
 **Role:** Builds three Tauri v2 desktop applications.  
@@ -187,13 +187,13 @@ Scaffolds a complete Tauri v2 Rust project from templates, installs frontend dep
 ### Scaffold Templates
 
 The module generates 6 files per target:
-- `Cargo.toml` — Rust project configuration with version
-- `build.rs` — Standard Tauri build script
-- `src/main.rs` — Application entry point
-- `src/lib.rs` — Library with `tauri::Builder::default()`
-- `src-tauri/capabilities/default.json` — Security capabilities
-- `src-tauri/tauri.conf.json` — Window configuration, bundle settings, icons
-- `.gitignore` — Standard Rust gitignore
+- `Cargo.toml` â€” Rust project configuration with version
+- `build.rs` â€” Standard Tauri build script
+- `src/main.rs` â€” Application entry point
+- `src/lib.rs` â€” Library with `tauri::Builder::default()`
+- `src-tauri/capabilities/default.json` â€” Security capabilities
+- `src-tauri/tauri.conf.json` â€” Window configuration, bundle settings, icons
+- `.gitignore` â€” Standard Rust gitignore
 
 ### Key Design Decisions
 
@@ -219,10 +219,10 @@ The module generates 6 files per target:
 
 ---
 
-## 5. setup_builder.py — Installer Builder
+## 5. setup_builder.py â€” Installer Builder
 
 **File:** `build/setup_builder.py` (401 lines)  
-**Role:** Produces `AIClusterSetup-<version>.exe` — the single-file Windows installer.  
+**Role:** Produces `AIClusterSetup-<version>.exe` â€” the single-file Windows installer.  
 **Score: 8/10`
 
 ### What It Does
@@ -270,7 +270,7 @@ This is thorough and handles the common install locations on Windows.
 
 ---
 
-## 6. package.py — Release Packaging
+## 6. package.py â€” Release Packaging
 
 **File:** `build/package.py` (188 lines)  
 **Role:** Generates checksums, manifests, and portable ZIPs for the release.  
@@ -278,16 +278,16 @@ This is thorough and handles the common install locations on Windows.
 
 ### What It Produces
 
-1. `release/checksums/checksums.txt` — Classic `sha256sum`-style file (one hash per line)
-2. `release/checksums/manifest.json` — Machine-readable JSON manifest with SHA-256, MD5, SHA-1 per file
-3. `release/zip/<app>_<version>.zip` — Per-app portable ZIP archives
-4. `release/manifest.json` — Top-level release manifest with version, build date, app info
+1. `release/checksums/checksums.txt` â€” Classic `sha256sum`-style file (one hash per line)
+2. `release/checksums/manifest.json` â€” Machine-readable JSON manifest with SHA-256, MD5, SHA-1 per file
+3. `release/zip/<app>_<version>.zip` â€” Per-app portable ZIP archives
+4. `release/manifest.json` â€” Top-level release manifest with version, build date, app info
 
 ### Key Design Decisions
 
 - **Three hash algorithms**: SHA-256 (primary), MD5 (backward compatibility), SHA-1 (legacy support). This is more than most projects provide.
 - **Per-app ZIPs**: Each app is packaged separately, enabling selective downloads.
-- **Top-level manifest**: Includes git tag, build date, company, copyright — enabling automated release tooling.
+- **Top-level manifest**: Includes git tag, build date, company, copyright â€” enabling automated release tooling.
 - **Missing target detection**: If any release subdirectory is missing, the build aborts with a clear error message. No silent failures.
 
 ### FileDigest Data Class
@@ -321,7 +321,7 @@ This is used throughout the packaging pipeline and serialized to JSON.
 
 ---
 
-## 7. release.py — Installer Scripts & Reports
+## 7. release.py â€” Installer Scripts & Reports
 
 **File:** `build/release.py` (469 lines)  
 **Role:** Generates Inno Setup and NSIS installer scripts, build reports, and release notes.  
@@ -337,8 +337,8 @@ This is used throughout the packaging pipeline and serialized to JSON.
 ### Installer Script Templates
 
 Two templates are provided:
-- `INNO_SETUP_TEMPLATE` — Modern wizard-style with desktop icon, Start Menu, license file, LZMA compression, per-user installation, x64 support.
-- `NSIS_TEMPLATE` — Minimal NSIS script with MUI2, same features.
+- `INNO_SETUP_TEMPLATE` â€” Modern wizard-style with desktop icon, Start Menu, license file, LZMA compression, per-user installation, x64 support.
+- `NSIS_TEMPLATE` â€” Minimal NSIS script with MUI2, same features.
 
 ### Build Report Format
 
@@ -368,7 +368,7 @@ The report includes:
 
 ---
 
-## 8. verify.py — Build Verification
+## 8. verify.py â€” Build Verification
 
 **File:** `build/verify.py` (257 lines)  
 **Role:** Verifies the build environment and produced artifacts.  
@@ -393,8 +393,8 @@ The `toolchain` module (called by `verify_environment`) checks:
 ```python
 def _try_launch(exe: Path, timeout: float = 4.0) -> Optional[str]:
     # Spawn the EXE, wait briefly, kill it
-    # If it stays alive → "launches"
-    # If it exits with error → report error
+    # If it stays alive â†’ "launches"
+    # If it exits with error â†’ report error
 ```
 
 This is a pragmatic approach that catches obviously broken executables without requiring complex launch-testing infrastructure.
@@ -415,7 +415,7 @@ This is a pragmatic approach that catches obviously broken executables without r
 
 ---
 
-## 9. clean.py — Artifact Cleanup
+## 9. clean.py â€” Artifact Cleanup
 
 **File:** `build/clean.py` (120 lines)  
 **Role:** Removes transient build artifacts.  
@@ -501,8 +501,8 @@ The orchestrator in `verification/verify.py` runs all checks and produces a cons
 
 **`release/checksums/checksums.txt`:**
 ```
-a1b2c3d4...  AIClusterMaster.exe
-e5f6g7h8...  AIClusterWorker.exe
+a1b2c3d4...  AIClusterRuntime.exe --mode master
+e5f6g7h8...  AIClusterRuntime.exe --mode worker
 ```
 
 **`release/checksums/manifest.json`:**
@@ -555,13 +555,13 @@ Generated but not compiled by default. Simpler script with MUI2 interface, deskt
 
 ```
 setup.iss template
-    → _stage_config() copies config/ and assets/
-    → _stage_python() downloads Python 3.12 installer
-    → _stage_vcredist() downloads VC++ redist
-    → _stage_aicluster() verifies PE + copies release/ → payload/aicluster/
-    → _iscc_compile() renders setup.iss with version defines
-    → ISCC.exe compiles → AIClusterSetup-<version>.exe
-    → _publish_output() copies to dist/ and artifacts/
+    â†’ _stage_config() copies config/ and assets/
+    â†’ _stage_python() downloads Python 3.12 installer
+    â†’ _stage_vcredist() downloads VC++ redist
+    â†’ _stage_aicluster() verifies PE + copies release/ â†’ payload/aicluster/
+    â†’ _iscc_compile() renders setup.iss with version defines
+    â†’ ISCC.exe compiles â†’ AIClusterSetup-<version>.exe
+    â†’ _publish_output() copies to dist/ and artifacts/
 ```
 
 ---
@@ -617,7 +617,7 @@ Generated by `verification/verify_report.py`. Contains results of all 10+ verifi
 ## 15. Strengths
 
 1. **No placeholder executables**: The most important design decision. Every EXE is real, verified, and validated at multiple stages.
-2. **Multi-gate verification**: Environment → build → PE gate → packaging → verification → release verification. Six layers of checks.
+2. **Multi-gate verification**: Environment â†’ build â†’ PE gate â†’ packaging â†’ verification â†’ release verification. Six layers of checks.
 3. **Comprehensive CLI flags**: 17 flags for fine-grained control of the pipeline.
 4. **Structured reporting**: Build reports, verification reports, and release notes are all generated automatically.
 5. **Dual installer support**: Both Inno Setup and NSIS scripts are generated.

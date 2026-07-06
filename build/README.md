@@ -1,4 +1,4 @@
-# AICluster Build System
+﻿# AICluster Build System
 
 A single-command, production-grade packaging pipeline for the entire
 AICluster platform. Generates every Windows executable, installer
@@ -25,7 +25,7 @@ or, equivalently:
 python -m build.build
 ```
 
-That's it. No manual steps, no missing dependencies — the orchestrator
+That's it. No manual steps, no missing dependencies â€” the orchestrator
 detects the toolchain, builds every frontend and backend, packages
 each app, generates installer scripts, and produces a build report.
 
@@ -35,8 +35,8 @@ each app, generates installer scripts, and produces a build report.
 
 | App                       | Output exe                  | Packager     |
 |---------------------------|-----------------------------|--------------|
-| Master Server             | `AIClusterMaster.exe`       | PyInstaller  |
-| Worker Service            | `AIClusterWorker.exe`       | PyInstaller  |
+| Master Server             | `AIClusterRuntime.exe --mode master`       | PyInstaller  |
+| Worker Service            | `AIClusterRuntime.exe --mode worker`       | PyInstaller  |
 | Master Control Center     | `MasterControlCenter.exe`   | Tauri v2     |
 | Worker Control Center     | `WorkerControlCenter.exe`   | Tauri v2     |
 | AICluster Studio          | `AIClusterStudio.exe`       | Tauri v2     |
@@ -52,37 +52,37 @@ written to `release/zip/`.
 
 ```
 build/
-├── build.py             master orchestrator
-├── build-all.bat        Windows entry point
-├── clean.py             wipe build artifacts
-├── verify.py            environment + artifact verification
-├── checksum.py          SHA-256 / MD5 / SHA-1 digests
-├── sign.py              Authenticode signing (opt-in)
-├── package.py           ZIP + manifest + checksums
-├── release.py           Inno Setup, NSIS, build report, release notes
-├── config.py            target definitions and paths
-├── version.py           version resolution + Windows version info
-├── toolchain.py         tool detection (Python, Node, Rust, …)
-├── pyinstaller_builder.py
-├── tauri_builder.py
-├── frontend.py
-├── modules/
-│   ├── cli_entry.py     bundled into aicluster.exe
-│   └── make_default_icon.py
-└── README.md            this file
+â”œâ”€â”€ build.py             master orchestrator
+â”œâ”€â”€ build-all.bat        Windows entry point
+â”œâ”€â”€ clean.py             wipe build artifacts
+â”œâ”€â”€ verify.py            environment + artifact verification
+â”œâ”€â”€ checksum.py          SHA-256 / MD5 / SHA-1 digests
+â”œâ”€â”€ sign.py              Authenticode signing (opt-in)
+â”œâ”€â”€ package.py           ZIP + manifest + checksums
+â”œâ”€â”€ release.py           Inno Setup, NSIS, build report, release notes
+â”œâ”€â”€ config.py            target definitions and paths
+â”œâ”€â”€ version.py           version resolution + Windows version info
+â”œâ”€â”€ toolchain.py         tool detection (Python, Node, Rust, â€¦)
+â”œâ”€â”€ pyinstaller_builder.py
+â”œâ”€â”€ tauri_builder.py
+â”œâ”€â”€ frontend.py
+â”œâ”€â”€ modules/
+â”‚   â”œâ”€â”€ cli_entry.py     bundled into aicluster.exe
+â”‚   â””â”€â”€ make_default_icon.py
+â””â”€â”€ README.md            this file
 
 release/
-├── master/              AIClusterMaster.exe
-├── worker/              AIClusterWorker.exe
-├── master-control/      MasterControlCenter.exe
-├── worker-control/      WorkerControlCenter.exe
-├── studio/              AIClusterStudio.exe
-├── cli/                 aicluster.exe
-├── checksums/           checksums.txt + manifest.json
-├── installer/           per-app installer.iss / installer.nsi
-├── zip/                 portable ZIPs
-├── reports/             build-report.md
-└── manifest.json        top-level release manifest
+â”œâ”€â”€ master/              AIClusterRuntime.exe --mode master
+â”œâ”€â”€ worker/              AIClusterRuntime.exe --mode worker
+â”œâ”€â”€ master-control/      MasterControlCenter.exe
+â”œâ”€â”€ worker-control/      WorkerControlCenter.exe
+â”œâ”€â”€ studio/              AIClusterStudio.exe
+â”œâ”€â”€ cli/                 aicluster.exe
+â”œâ”€â”€ checksums/           checksums.txt + manifest.json
+â”œâ”€â”€ installer/           per-app installer.iss / installer.nsi
+â”œâ”€â”€ zip/                 portable ZIPs
+â”œâ”€â”€ reports/             build-report.md
+â””â”€â”€ manifest.json        top-level release manifest
 ```
 
 ---
@@ -160,10 +160,10 @@ The resolved version is embedded into:
 
 Two flavours of installer source are produced for every app:
 
-* **Inno Setup** (`release/installer/<app>/installer.iss`) — primary
+* **Inno Setup** (`release/installer/<app>/installer.iss`) â€” primary
   Windows installer. Compiled automatically if `ISCC.exe` is on
   `PATH` or in `C:\Program Files*\Inno Setup\`.
-* **NSIS** (`release/installer/<app>/installer.nsi`) — alternative
+* **NSIS** (`release/installer/<app>/installer.nsi`) â€” alternative
   Windows installer. Compiled automatically if `makensis.exe` is
   available.
 
@@ -176,8 +176,8 @@ the version metadata, and the license file.
 
 `release/checksums/` contains:
 
-* `checksums.txt` — classic `sha256sum` format
-* `manifest.json` — machine-readable digest manifest with file size,
+* `checksums.txt` â€” classic `sha256sum` format
+* `manifest.json` â€” machine-readable digest manifest with file size,
   SHA-256, MD5, and SHA-1
 
 The top-level `release/manifest.json` ties the per-app digests
@@ -207,7 +207,7 @@ Signing is **opt-in** and only runs when `--sign` is passed *and*:
 * `AICLUSTER_CERT_PATH` points to an existing `.pfx`/`.p12`, **and**
 * (optionally) `AICLUSTER_CERT_PASSWORD` is set.
 
-Unsigned builds are perfectly valid — the build never fails just
+Unsigned builds are perfectly valid â€” the build never fails just
 because a certificate is missing.
 
 ---
@@ -224,8 +224,8 @@ because a certificate is missing.
 | Tauri CLI       | no       | 2.0         | Tauri apps              |
 | Inno Setup      | no       | 6           | installer compilation   |
 | NSIS            | no       | 3           | installer compilation   |
-| 7-Zip           | no       | —           | portable ZIPs (fallback) |
-| signtool        | no       | —           | Authenticode signing    |
+| 7-Zip           | no       | â€”           | portable ZIPs (fallback) |
+| signtool        | no       | â€”           | Authenticode signing    |
 
 The orchestrator stops only on missing *required* tools.
 
@@ -234,10 +234,10 @@ The orchestrator stops only on missing *required* tools.
 ## Reproducibility
 
 * Every spec, manifest, config file, and installer script is
-  regenerated on every build — there is no hand-edited state.
+  regenerated on every build â€” there is no hand-edited state.
 * Build outputs are content-addressed via SHA-256 in
   `release/checksums/manifest.json`.
-* The build is fully driven by `build/config.py` — adding a new app
+* The build is fully driven by `build/config.py` â€” adding a new app
   is a single dataclass entry.
 
 ---

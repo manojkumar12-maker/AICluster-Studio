@@ -1,4 +1,4 @@
-# Python
+# ── Python ──
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -7,47 +7,51 @@ venv/
 env/
 *.egg
 
-# Node
+# ── Node ──
 node_modules/
 .next/
 *.tsbuildinfo
 next-env.d.ts
 
-# IDE
+# ── IDE / Editor ──
 .idea/
 *.swp
 *.swo
-.vscode/settings.json
+.vscode/
+*.iml
 
-# OS
+# ── OS ──
 .DS_Store
 Thumbs.db
 
-# Environment
+# ── Environment (secrets) ──
 .env
 .env.local
 .env.*.local
+backend/.env
+backend/.env.example
+worker/.env
+frontend/.env.local
 
-# Logs
+# ── Runtime Data ──
 logs/*.log
 logs/*.txt
+backend/logs/
+runtime/logs/
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+data/secret.key
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# Config overrides
-config/production.yaml
-config/development.yaml
-
-# Models
+# ── Models ──
 models/*.bin
 models/*.pt
 models/*.pth
 models/*.onnx
+runtime/models/*.bin
+runtime/models/*.pt
 
-# Build
+# ── Build ──
 dist/
 artifacts/
 temp/
@@ -57,38 +61,57 @@ release/
 *.spec
 *.ico.bak
 
-# Coverage
+# ── Config Overrides ──
+config/production.yaml
+config/development.yaml
+config/user.yaml
+config/secrets.enc
+config/role.json
+
+# ── Coverage ──
 coverage/
 .coverage
 *.coverage
 htmlcov/
 
-# Rust / Tauri
+# ── Rust / Tauri ──
 target/
 gen/
 
-# Build system
+# ── Build Intermediates ──
 build/setup/Output/
 build/setup/payload/
 build/modules/dist/
 build/modules/build/
+build/modules/*.spec
+build/modules/*_version.txt
+backend/app/build/
+backend/app/main_master_version.txt
+backend/app/dist/
+build/hello/
+build/hello2/
+build/main_master/
+build/test_pkg/
+build/test_spec/
+frontend/.next/
+frontend/dist/
 
-# Pytest
+# ── Test / Lint Caches ──
 .pytest_cache/
-
-# Linters
 .ruff_cache/
 .oxlint_cache/
 .mypy_cache/
 
-# Generated docs
+# ── Generated Docs ──
 docs/Images/
 
-# Misc
+# ── Misc ──
 *.pid
 *.seed
 *.pid.lock
 nul
-build/modules/build/
-build/modules/dist/
-backend/app/build/
+
+# ── Rust Build Caches ──
+master-control-center/frontend/src-tauri/target/
+studio/src-tauri/target/
+worker-control-center/frontend/src-tauri/target/

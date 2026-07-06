@@ -1,63 +1,63 @@
-<div align="center">
+﻿<div align="center">
 
-# 🚀 AICluster v1.3.1
+# ðŸš€ AICluster v2.0.0
 
 **Offline-first AI cluster management platform for distributed computing across Windows machines**
 
-[![Version](https://img.shields.io/badge/Version-1.3.1-blue?style=flat&logo=github&color=blue)](https://github.com/manojkumar12-maker/AICluster-Studio/releases)
+[![Version](https://img.shields.io/badge/Version-2.0.0-blue?style=flat&logo=github&color=blue)](https://github.com/manojkumar12-maker/AICluster-Studio/releases)
 [![Security](https://img.shields.io/badge/Security-Hardened-brightgreen?style=flat)](SECURITY.md)
 [![Tests](https://img.shields.io/badge/Tests-74/74-green?style=flat)](backend/tests/)
 [![Python](https://img.shields.io/badge/Python-3.12+-blue?style=flat&logo=python&logoColor=white)](https://python.org)
 [![Build](https://img.shields.io/badge/Build-Passing-success?style=flat)](build/)
 [![Windows](https://img.shields.io/badge/Windows-10/11-blue?style=flat&logo=windows&logoColor=white)](INSTALLATION.md)
 
-**From v1.3.0 → v1.3.1: 4 CRITICAL and 5 HIGH security issues resolved. Production ready.**
+**v2.0.0: Unified runtime architecture, single-click installer, auto-configured first run. Production ready.**
 
 </div>
 
 ---
 
-## ✨ Features
+## âœ¨ Features
 
 | Area | Capabilities |
 |------|-------------|
-| **🔐 Security** | JWT auth on all 131 endpoints, bcrypt passwords, rate limiting, CORS enforcement |
-| **🧠 AI Runtime** | Multi-provider (Ollama, llama.cpp, OpenAI-compatible), model routing, context optimization, chat sessions |
-| **📦 Workflow Engine** | DAG-based task orchestration, parallel execution, exponential backoff retry, artifact store |
-| **🤝 Multi-Agent** | 12 default agents, orchestrated pipelines, inter-agent communication, code review & merge |
-| **🔌 Plugin System** | Plugin SDK with 16 hook types, lifecycle management, dynamic loading |
-| **📊 Repository Intelligence** | Multi-language symbol parser, dependency graph, code metrics, full-text search |
-| **🛠️ Engineering Engine** | Goal analysis, automated planning, quality gates, self-repair, documentation generation |
-| **📋 Audit System** | Event capture middleware, 17 categories, search, CSV/JSON export, retention policies |
-| **👷 Worker Fleet** | Distributed job execution, 21-state machine, auto-reconnect, async handlers |
-| **🌐 Offline-First** | 100% LAN operation, no internet required after initial setup |
+| **ðŸ” Security** | JWT auth on all 131 endpoints, bcrypt passwords, rate limiting, CORS enforcement |
+| **ðŸ§  AI Runtime** | Multi-provider (Ollama, llama.cpp, OpenAI-compatible), model routing, context optimization, chat sessions |
+| **ðŸ“¦ Workflow Engine** | DAG-based task orchestration, parallel execution, exponential backoff retry, artifact store |
+| **ðŸ¤ Multi-Agent** | 12 default agents, orchestrated pipelines, inter-agent communication, code review & merge |
+| **ðŸ”Œ Plugin System** | Plugin SDK with 16 hook types, lifecycle management, dynamic loading |
+| **ðŸ“Š Repository Intelligence** | Multi-language symbol parser, dependency graph, code metrics, full-text search |
+| **ðŸ› ï¸ Engineering Engine** | Goal analysis, automated planning, quality gates, self-repair, documentation generation |
+| **ðŸ“‹ Audit System** | Event capture middleware, 17 categories, search, CSV/JSON export, retention policies |
+| **ðŸ‘· Worker Fleet** | Distributed job execution, 21-state machine, auto-reconnect, async handlers |
+| **ðŸŒ Offline-First** | 100% LAN operation, no internet required after initial setup |
 
 ---
 
-## 🏗️ Architecture
+## ðŸ—ï¸ Architecture
 
 ```
 Master (FastAPI :8000)          Workers (FastAPI :8001+)
-┌──────────────────────┐        ┌──────────────────────┐
-│ REST API (131 routes)│        │ State Machine       │
-│ WebSocket (JWT auth) │◄──────►│ Job Execution       │
-│ Scheduler            │        │ Path Validation     │
-│ AI Runtime           │        │ Async IO            │
-│ SQLite Database      │        │ Auto-Reconnect      │
-│ Rate Limiter         │        └──────────────────────┘
-└──────────────────────┘
-         │
-         ▼
-┌──────────────────────┐
-│ Web Dashboard (:3000)│
-│ Desktop Apps (Tauri) │
-│ CLI (aicluster.exe)  │
-└──────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”        â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ REST API (131 routes)â”‚        â”‚ State Machine       â”‚
+â”‚ WebSocket (JWT auth) â”‚â—„â”€â”€â”€â”€â”€â”€â–ºâ”‚ Job Execution       â”‚
+â”‚ Scheduler            â”‚        â”‚ Path Validation     â”‚
+â”‚ AI Runtime           â”‚        â”‚ Async IO            â”‚
+â”‚ SQLite Database      â”‚        â”‚ Auto-Reconnect      â”‚
+â”‚ Rate Limiter         â”‚        â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+         â”‚
+         â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ Web Dashboard (:3000)â”‚
+â”‚ Desktop Apps (Tauri) â”‚
+â”‚ CLI (aicluster.exe)  â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ---
 
-## 🚀 Quick Start
+## ðŸš€ Quick Start
 
 ```powershell
 # 1. Install Python 3.12+
@@ -77,13 +77,13 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 # 6. Open http://localhost:3000 and log in
 ```
 
-📖 **[Full Installation Guide](docs/INSTALLATION.md)** — covers installer, portable, source, and production deployment.
+ðŸ“– **[Full Installation Guide](docs/INSTALLATION.md)** â€” covers installer, portable, source, and production deployment.
 
 ---
 
-## 🔐 Security Posture
+## ðŸ” Security Posture
 
-| Severity | v1.3.0 | v1.3.1 |
+| Severity | v2.0.0 | v2.0.0 |
 |----------|--------|--------|
 | CRITICAL | 4 | **0** |
 | HIGH | 5 | **0** |
@@ -94,7 +94,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 ---
 
-## 📸 Documentation
+## ðŸ“¸ Documentation
 
 | Guide | Description |
 |-------|-------------|
@@ -104,11 +104,11 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 | [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Production hardening |
 | [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | 45 common problems |
 | [FAQ.md](docs/FAQ.md) | Frequently asked questions |
-| [UPGRADING.md](docs/UPGRADING.md) | Upgrade from v1.3.0 |
+| [UPGRADING.md](docs/UPGRADING.md) | Upgrade from v2.0.0 |
 
 ---
 
-## 🛠️ Technology Stack
+## ðŸ› ï¸ Technology Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -124,48 +124,48 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 ---
 
-## 📁 Directory Structure
+## ðŸ“ Directory Structure
 
 ```
 AICluster/
-├── backend/              # FastAPI master server (Python)
-│   ├── app/              # Application code (15+ subsystems)
-│   ├── tests/            # 60 pytest tests
-│   └── data/             # Runtime database & secrets
-├── worker/               # Worker agent (Python)
-│   ├── app/              # Worker application code
-│   └── tests/            # 14 pytest tests
-├── frontend/             # Next.js 15 dashboard
-├── studio/               # Tauri v2 desktop IDE
-├── master-control-center/# Tauri cluster management app
-├── worker-control-center/# Tauri worker management app
-├── build/                # Build system & verification
-├── scripts/              # PowerShell & Python tools
-├── config/               # YAML configuration
-├── shared/               # Shared types & protocols
-├── docs/                 # Documentation (8 guides)
-├── dist/                 # Built executables
-├── VERSION               # 1.3.1
-└── CHANGELOG.md          # Release history
+â”œâ”€â”€ backend/              # FastAPI master server (Python)
+â”‚   â”œâ”€â”€ app/              # Application code (15+ subsystems)
+â”‚   â”œâ”€â”€ tests/            # 60 pytest tests
+â”‚   â””â”€â”€ data/             # Runtime database & secrets
+â”œâ”€â”€ worker/               # Worker agent (Python)
+â”‚   â”œâ”€â”€ app/              # Worker application code
+â”‚   â””â”€â”€ tests/            # 14 pytest tests
+â”œâ”€â”€ frontend/             # Next.js 15 dashboard
+â”œâ”€â”€ studio/               # Tauri v2 desktop IDE
+â”œâ”€â”€ master-control-center/# Tauri cluster management app
+â”œâ”€â”€ worker-control-center/# Tauri worker management app
+â”œâ”€â”€ build/                # Build system & verification
+â”œâ”€â”€ scripts/              # PowerShell & Python tools
+â”œâ”€â”€ config/               # YAML configuration
+â”œâ”€â”€ shared/               # Shared types & protocols
+â”œâ”€â”€ docs/                 # Documentation (8 guides)
+â”œâ”€â”€ dist/                 # Built executables
+â”œâ”€â”€ VERSION               # 1.3.1
+â””â”€â”€ CHANGELOG.md          # Release history
 ```
 
 ---
 
-## ✅ Build
+## âœ… Build
 
 Executables are built using PyInstaller:
 
 | File | Size | For |
 |------|------|-----|
-| `AIClusterMaster.exe` | ~250 MB | Master server machine |
-| `AIClusterWorker.exe` | ~52 MB | Each worker machine |
-| `aicluster.exe` | ~30 MB | CLI (optional) |
+| `AIClusterRuntime.exe` | ~53 MB | Unified Master + Worker service |
+| `aicluster.exe` | ~29 MB | CLI |
+| `AIClusterStudio.exe` | ~12 MB | Desktop IDE |
 
-All in `dist/` organized by role.
+All in `release/` organized by role.
 
 ---
 
-## 📋 Requirements
+## ðŸ“‹ Requirements
 
 | Component | Minimum | Recommended |
 |-----------|---------|-------------|
@@ -177,18 +177,18 @@ All in `dist/` organized by role.
 
 ---
 
-## 🤝 Contributing
+## ðŸ¤ Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 
 ---
 
-## 📄 License
+## ðŸ“„ License
 
-AICluster is © 2026 Manoj Kumar Mathangi. All rights reserved. See [NOTICE.md](NOTICE.md).
+AICluster is Â© 2026 Manoj Kumar Mathangi. All rights reserved. See [NOTICE.md](NOTICE.md).
 
 ---
 
 <div align="center">
-Made with ❤️ by the AICluster Contributors
+Made with â¤ï¸ by the AICluster Contributors
 </div>

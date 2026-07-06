@@ -3,55 +3,79 @@
 ## Supported Versions
 
 | Version | Supported |
-|---------|-----------|
-| 1.3.x   | ✅ Active development |
-| 1.2.x   | ✅ Security patches |
-| 1.1.x   | ✅ Security patches |
-| 1.0.x   | ❌ End of life |
-| < 1.0   | ❌ End of life |
+|---|---|
+| 2.0.x | ✅ Active support |
+| 1.3.x | ⚠️ Security fixes only |
+| < 1.3.0 | ❌ End of life |
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in AICluster, please report it by emailing:
+AICluster takes security seriously. We appreciate responsible disclosure.
 
-**manoj.spoffice.kri@gmail.com**
+### Process
 
-Do **not** report security vulnerabilities via public GitHub issues.
+1. **Do not open a public issue.** Email security@aicluster.local with:
+   - Detailed description of the vulnerability
+   - Steps to reproduce
+   - Potential impact
+   - Suggested fix (if available)
 
-### What to include
+2. You will receive an acknowledgment within **48 hours**.
 
-- Description of the vulnerability
-- Steps to reproduce
-- Affected versions
-- Potential impact
-- Any suggested fix (if known)
+3. We will investigate and provide an initial assessment within **5 business days**.
 
-### Response timeline
+4. Once a fix is developed, we will coordinate a release timeline with you.
+
+### Response Timeline
 
 | Timeframe | Action |
-|-----------|--------|
-| 24 hours  | Acknowledgment of receipt |
-| 72 hours  | Initial triage and severity assessment |
-| 7 days    | Fix in progress or mitigation plan shared |
-| 14 days   | Patch released or detailed advisory published |
+|---|---|
+| 48 hours | Acknowledgment of receipt |
+| 5 days | Initial triage and severity assessment |
+| 14 days | Fix in progress or mitigation plan shared |
+| 30 days | Patch released or advisory published |
 
-## Security Response Process
+### Scope
 
-1. **Report received** — triage team acknowledges within 24 hours
-2. **Assessment** — vulnerability is classified by severity (Critical, High, Medium, Low)
-3. **Fix development** — a patch is developed and reviewed internally
-4. **Patch release** — fix is published as a patch release for all supported versions
-5. **Disclosure** — advisory is published after users have had reasonable time to update
+Security issues in the following areas are in scope:
+- Authentication bypass
+- JWT forgery
+- SQL injection
+- Path traversal
+- Worker spoofing
+- Privilege escalation
+- Plugin sandbox escape
+- Sensitive data exposure
+- API abuse / rate limiting bypass
 
-## Recommended Security Practices
+### Out of Scope
+- Social engineering attacks
+- Physical access attacks
+- DoS attacks (without novel technique)
+- Issues in third-party dependencies (report upstream)
 
-- Change the default `admin` password immediately after installation
-- Run AICluster on a trusted local network — do not expose the API to the internet
-- Use environment variables or a secrets manager for `SECRET_KEY` and database credentials
-- Enable HTTPS in production using a reverse proxy (e.g., nginx, Caddy)
-- Restrict API access via firewall rules to known worker and dashboard IPs
-- Regularly audit audit logs (`/api/v1/audit/logs`) for suspicious activity
-- Keep all dependencies updated — run `pip-audit` and `npm audit` regularly
-- Do not run AICluster with elevated/administrator privileges unless required
-- Configure rate limiting to mitigate brute-force attacks on authentication endpoints
-- Review plugin manifests before installation — plugins have access to system APIs
+## Security Architecture
+
+AICluster v2.0.0 includes:
+
+- **JWT Authentication**: HS256 with auto-generated 32-byte random secret key stored in `data/secret.key`
+- **Password Hashing**: bcrypt with random salt via passlib
+- **Rate Limiting**: 100 requests/minute on login endpoint (SlowAPI)
+- **CORS Enforcement**: Restricted to configured origins
+- **Worker Authentication**: JWT or shared secret key
+- **Plugin Isolation**: Sandboxed execution with permission model
+- **SQL Injection Prevention**: SQLAlchemy parameterized queries throughout
+- **Secret Key Generation**: `secrets.token_hex(32)` on first run, persisted to `data/secret.key`
+
+## Best Practices for Deployers
+
+1. **Change the default password** immediately after first login (`admin`/`admin`)
+2. **Set `AICLUSTER_ADMIN_PASSWORD`** environment variable for automated deployments
+3. **Restrict network access** to the master server port (8000) within LAN only
+4. **Enable Windows Firewall** rules (offered during installation)
+5. **Keep AICluster updated** to the latest version
+6. **Review worker registrations** periodically for unauthorized nodes
+7. **Use the standalone installer** rather than manual Python setup for production
+8. **Do not expose the API** to the public internet
+9. **Audit logs regularly** via `/api/v1/audit/logs`
+10. **Run AICluster without elevated privileges** unless required for hardware access

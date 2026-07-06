@@ -221,3 +221,13 @@ class SchedulerService:
         return await self.db.scalar(
             select(func.count(Job.id)).where(Job.status == "running")
         ) or 0
+
+    async def get_queued_count(self) -> int:
+        return await self.db.scalar(
+            select(func.count(Job.id)).where(Job.status == "queued")
+        ) or 0
+
+    async def get_total_count(self) -> int:
+        return await self.db.scalar(
+            select(func.count(Job.id))
+        ) or 0
