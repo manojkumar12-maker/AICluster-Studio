@@ -1,201 +1,144 @@
 # Contributing to AICluster
 
-Thank you for your interest in contributing to AICluster. This document outlines the setup process, coding standards, and workflow for contributors.
+Thank you for your interest in contributing! AICluster is an open-source, offline-first AI cluster management platform for Windows.
 
----
+## Repository Structure
 
-## Setup Instructions
+```
+AICluster/
+├── backend/          FastAPI master server (Python 3.12+)
+├── worker/           Worker agent (Python 3.12+)
+├── studio/           Desktop IDE (Tauri v2 + React/TypeScript)
+│   └── src-tauri/    Rust backend for Studio
+├── frontend/         Web dashboard (Next.js 15)
+├── build/            Build system (PyInstaller, Inno Setup, Tauri)
+├── config/           Default configuration files
+├── docs/             Documentation
+├── scripts/          PowerShell/Python utility scripts
+├── runtime/          Combined entry points
+└── shared/           Shared Python utilities
+```
+
+## Getting Started
 
 ### Prerequisites
 
-- **Python** 3.12+
-- **Node.js** 20+
-- **Rust** (stable) — only needed for Tauri desktop apps (Studio, Master Control Center, Worker Control Center)
+| Tool | Minimum Version |
+|---|---|
+| Python | 3.12+ |
+| Node.js | 18+ |
+| Rust | 1.70+ |
+| PyInstaller | 6.x |
+| Tauri CLI | 2.x |
+| Inno Setup 6 | 6.4+ (for installer builds) |
 
-### Clone and Install
+### Setup
 
-```powershell
-# Clone the repository
-git clone https://github.com/your-org/AICluster.git
+```bash
+git clone https://github.com/manojkumar12-maker/AICluster-Studio.git
 cd AICluster
 
-# Backend
+# Python dependencies
+pip install -r backend/requirements.txt
+
+# Node dependencies
+cd frontend && npm install && cd ..
+cd studio && npm install && cd ..
+
+# Run backend in development
 cd backend
-python -m venv .venv
-.venv\Scripts\pip install -r requirements.txt
-.venv\Scripts\pip install -r requirements-dev.txt  # dev/lint/test dependencies
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
-# Frontend (web dashboard)
-cd ../frontend
-npm install
-
-# Studio (Tauri desktop app)
-cd ../studio
-npm install
-
-# Master Control Center
-cd ../master-control-center/frontend
-npm install
-
-# Worker Control Center
-cd ../worker-control-center/frontend
-npm install
+# Run Studio in development
+cd studio
+npm run tauri dev
 ```
-
----
 
 ## Coding Standards
 
-### Python
+### Python (Backend / Worker)
+- Follow PEP 8
+- Use type hints with `from __future__ import annotations`
+- Use async/await for database and HTTP operations
+- Pydantic v2 for all request/response models
+- SQLAlchemy 2.0 with `Mapped[]` annotations
+- Format with `ruff`, lint with `ruff check`
 
-- **Formatter**: [Black](https://github.com/psf/black) with default settings (line length 88)
-- **Linter**: [ruff](https://github.com/astral-sh/ruff) with default rules
-- **Type hints**: Required for all function signatures and public APIs
-- **Style**: Follow [PEP 8](https://peps.python.org/pep-0008/) conventions
+### TypeScript / React (Frontend / Studio)
+- Functional components with hooks
+- Zustand for state management
+- All API types must match backend Pydantic schemas
+- Use `string` for IDs (backends use UUIDs)
+- Format with Prettier, lint with ESLint
 
-```bash
-# Format and lint
-cd backend
-.venv\Scripts\black app/ tests/
-.venv\Scripts\ruff check app/ tests/
-```
+### Rust (Studio Tauri Backend)
+- `cargo fmt` and `cargo clippy` before committing
+- Tauri commands should delegate to shared LifecycleManager
+- Handle all error cases explicitly
 
-### TypeScript / React
+### General
+- **No `except Exception: pass`** — always log the error
+- **No hardcoded secrets** — use environment variables or auto-generated keys
+- **No hardcoded IP addresses** — use configurable defaults
 
-- **Formatter**: [Prettier](https://prettier.io/) with project settings
-- **Linter**: [ESLint](https://eslint.org/) with TypeScript rules
-- **TypeScript**: Strict mode enabled — all types must be explicit
-- **Component style**: Functional components with hooks, no class components
+## Branch Strategy
 
-```bash
-# Format and lint
-cd frontend
-npx prettier --write src/
-npx eslint src/
-npx tsc --noEmit
-```
+- `main` — Stable release branch
+- `develop` — Integration branch
+- `feature/*` — New features
+- `fix/*` — Bug fixes
+- `release/*` — Release preparation
+- `docs/*` — Documentation changes
 
-### Rust (Tauri)
+## Commit Messages
 
-- **Formatter**: `rustfmt` with default settings
-- **Linter**: `clippy` with default rules
+Follow Conventional Commits:
+- `feat:` — New feature
+- `fix:` — Bug fix
+- `docs:` — Documentation
+- `refactor:` — Code restructuring
+- `perf:` — Performance
+- `test:` — Tests
+- `build:` — Build system
+- `security:` — Security fix
 
-```bash
-# Format and lint
-cd studio/src-tauri
-cargo fmt
-cargo clippy
-```
+## Pull Requests
 
----
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes following coding standards
+4. Run tests: `cd backend && python -m pytest -v`
+5. Open a Pull Request using the PR template
 
-## Pull Request Process
+### PR Checklist
+- [ ] Code follows coding standards
+- [ ] Tests pass on Windows 10/11
+- [ ] No new warnings or errors
+- [ ] No breaking changes to REST API or database schema without discussion
+- [ ] Documentation updated if needed
 
-1. **Fork** the repository and create a feature branch from `main`
-2. **Make your changes** following the coding standards above
-3. **Write or update tests** for all changed functionality
-4. **Run the full test suite** and confirm it passes
-5. **Update documentation** if you changed public APIs, added features, or modified behavior
-6. **Create a pull request** with a clear title and description
-
-### PR checklist
-
-- [ ] Code follows project coding standards
-- [ ] All existing tests pass
-- [ ] New tests added for new functionality
-- [ ] Documentation updated (API docs, architecture docs, etc.)
-- [ ] No new lint warnings or TypeScript errors
-- [ ] Commit messages follow conventional commits format
-- [ ] Branch is up to date with target branch
-
-### Review process
-
-- At least one maintainer review is required
-- All CI checks must pass
-- Changes requiring documentation updates will be blocked until docs are complete
-
----
-
-## Testing Requirements
+## Testing
 
 ```bash
-# Backend tests (pytest)
-cd backend
-.venv\Scripts\pytest -v           # Unit tests
-.venv\Scripts\python ..\scripts\run-integration-test.py  # Integration tests
+# Backend tests
+cd backend && python -m pytest -v
 
-# Frontend build check
-cd frontend
-npm run build
-npm run lint
-
-# Worker tests
-cd worker
-.venv\Scripts\pytest -v
-
-# All Tauri apps must build without errors
-cd studio
-npm run tauri build
+# Build verification
+python -m build.verify
 ```
 
-- All new features require unit tests
-- API changes require integration tests
-- Bug fixes require a regression test
-- Test coverage should not decrease
+## Release Process
 
----
+1. All changes merged to `main`
+2. Version bumped in `VERSION`, `config.py`, `constants.py`
+3. `CHANGELOG.md` updated
+4. Full build: `build-all.bat`
+5. Installer tested with silent install
+6. Tag: `git tag -a v2.0.0 -m "AICluster v2.0.0 Stable"`
+7. Release created on GitHub
 
-## Documentation Requirements
+## Questions?
 
-- All new API endpoints must be added to `docs/Architecture/API_REFERENCE.md`
-- New database tables must be documented in `docs/Architecture/DATABASE.md`
-- Architectural changes must be reflected in `docs/Architecture/PROJECT_REVIEW.md`
-- User-facing features should have corresponding documentation in the appropriate `docs/` subdirectory
-- Update `docs/DOCUMENT_INDEX.md` when adding or removing documentation files
-
----
-
-## Commit Message Style
-
-AICluster uses **Conventional Commits**:
-
-```
-<type>(<scope>): <description>
-
-[optional body]
-[optional footer]
-```
-
-### Types
-
-| Type | Usage |
-|------|-------|
-| `feat` | A new feature |
-| `fix` | A bug fix |
-| `docs` | Documentation only changes |
-| `style` | Code style changes (formatting, linting) |
-| `refactor` | Code refactoring without feature change or fix |
-| `test` | Adding or updating tests |
-| `chore` | Build process, dependencies, tooling |
-| `perf` | Performance improvement |
-| `sec` | Security fix |
-
-### Examples
-
-```
-feat(worker): add GPU utilization reporting to heartbeat
-fix(api): handle null assigned_worker in job listing
-docs(audit): document new retention settings endpoint
-test(workflow): add integration test for DAG cancellation
-sec(auth): rotate JWT secret on password change
-```
-
-### Scope values
-
-`backend`, `frontend`, `worker`, `studio`, `mcc` (master control center), `wcc` (worker control center), `build`, `docs`, `config`, `plugins`, `shared`, `scripts`, `audit`
-
----
-
-## Questions
-
-If you have questions about contributing, open a GitHub Discussion or contact the maintainers.
+- **Bugs**: Open a [Bug Report](.github/ISSUE_TEMPLATE/bug_report.md)
+- **Features**: Open a [Feature Request](.github/ISSUE_TEMPLATE/feature_request.md)
+- **Security**: See [SECURITY.md](SECURITY.md)

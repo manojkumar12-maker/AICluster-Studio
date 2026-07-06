@@ -16,12 +16,14 @@ from .middleware import limiter, SlowAPIMiddleware
 from .websocket.manager import ws_manager
 from .services.worker_manager import WorkerManagerService
 from .services.auth import AuthService
+from .services.scheduler import SchedulerService
 from .logging_config import setup_logging
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
 offline_checker_task = None
+scheduler_task = None
 
 
 @asynccontextmanager
@@ -55,10 +57,34 @@ async def lifespan(app: FastAPI):
     offline_checker_task = asyncio.create_task(check_offline_workers())
     logger.info("Offline worker checker started")
 
+    async def run_scheduler():
+        while True:
+            try:
+                async for db in get_db():
+                    scheduler = SchedulerService(db)
+                    await scheduler._process_queue()
+                    break
+            except Exception as e:
+                logger.error(f"Scheduler error: {e}")
+            await asyncio.sleep(2)
+
+    scheduler_task = asyncio.create_task(run_scheduler())
+    logger.info("Job scheduler started")
+
     yield
 
+    if scheduler_task:
+        scheduler_task.cancel()
+        try:
+            await scheduler_task
+        except asyncio.CancelledError:
+            pass
     if offline_checker_task:
         offline_checker_task.cancel()
+        try:
+            await offline_checker_task
+        except asyncio.CancelledError:
+            pass
     logger.info("Shutdown complete")
 
 

@@ -14,6 +14,10 @@ import sys
 
 
 def main() -> None:
+    if sys.stdout is None:
+        sys.stdout = open(os.devnull, "w")
+    if sys.stderr is None:
+        sys.stderr = open(os.devnull, "w")
     meipass = getattr(sys, "_MEIPASS", None)
     if meipass and os.path.isdir(os.path.join(meipass, "app")):
         sys.path.insert(0, meipass)

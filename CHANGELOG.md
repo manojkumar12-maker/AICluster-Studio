@@ -1,6 +1,33 @@
-# Changelog
+﻿# Changelog
 
-## v1.3.1 (2026-07-04)
+## v2.0.0 (2026-07-06)
+
+### Architecture
+- **Unified runtime**: Single `AIClusterRuntime.exe --mode master|worker|both` replaces separate Master.exe and Worker.exe
+- **Auto-configured first run**: Installer generates `role.json` with standalone role; Studio auto-starts master on first launch
+- **Inno Setup 6 installer**: Single-click Windows installer with desktop shortcuts, firewall rules, and uninstaller
+
+### Authentication
+- **User info in login response**: `POST /api/v1/auth/login` now returns full `user` object (id, username, role, is_active, created_at)
+- **Dashboard schema expanded**: Added `online_workers`, `active_jobs`, `queued_jobs`, `queue_depth`, `repositories`, `plugins`, `workflows` fields
+- **Scheduler autodispatch**: Background job dispatch now starts automatically with the master
+
+### Fixes
+- Fixed Tauri `build.rs` double-brace syntax error preventing Studio compilation
+- Fixed frontend ID types (string UUIDs vs number) to match backend schema
+- Fixed `ProcessManager`/`HealthManager` commands using shared lifecycle instance (was losing state)
+- Fixed `Role` enum serde case mismatch between frontend (lowercase) and Rust (PascalCase)
+- Fixed worker heartbeat rejection due to missing `version` field in schema
+- Fixed installer freeze: `SolidCompression=no` + `ewNoWait` for firewall command
+- Fixed version numbers synced across all components (config.py, constants.py, build-all.bat)
+- Fixed missing icon references (cli.ico, studio.ico â†’ default.ico)
+
+### Breaking Changes from v1.3.x
+- Binary names changed: `AIClusterRuntime.exe --mode master`/`AIClusterRuntime.exe --mode worker` â†’ `AIClusterRuntime.exe --mode master|worker`
+- Installer filename: `AIClusterSetup-2.0.0.exe` â†’ `AIClusterSetup-2.0.0.exe`
+- Config auto-generation: `role.json` is now created by the installer; no manual config required
+
+## v2.0.0 (2026-07-04)
 
 ### Security
 - **CRITICAL**: Replaced hardcoded JWT secret with auto-generated 32-byte random key (S-001)
@@ -42,20 +69,20 @@
 
 ### Sprint 1-4 (2026-07-04)
 
-## v1.3.0 (2026-07-03)
+## v2.0.0 (2026-07-03)
 
 ### Added
-- Project Audit & Production Readiness Review — comprehensive 9,000+ line documentation
-- Release Verification System (build/verification/) — automated post-build validation pipeline
-- AIClusterSetup.exe (Inno Setup) — single-file wizard installer with Python/VC++ detection
-- Audit System (backend/app/audit/) — event capture, middleware, storage, query API
-- Plugin SDK (backend/app/plugins/) — hooks, loader, manifest, registry
-- Studio (studio/) — Tauri v2 desktop IDE with workspace management
-- Repository Intelligence (backend/app/repository/) — code indexer, search, metrics, parser
-- Workflow Engine (backend/app/workflow/) — DAG-based task execution with dispatcher
-- AI Runtime (backend/app/ai/) — multi-provider, routing, sessions, context, tools
-- Engineering Engine (backend/app/engineering/) — documentation, planning, quality, repair, risk, validator
-- Multi-Agent Engine (backend/app/agents/) — registry, orchestrator, planner, communication, review, merge
+- Project Audit & Production Readiness Review â€” comprehensive 9,000+ line documentation
+- Release Verification System (build/verification/) â€” automated post-build validation pipeline
+- AIClusterSetup.exe (Inno Setup) â€” single-file wizard installer with Python/VC++ detection
+- Audit System (backend/app/audit/) â€” event capture, middleware, storage, query API
+- Plugin SDK (backend/app/plugins/) â€” hooks, loader, manifest, registry
+- Studio (studio/) â€” Tauri v2 desktop IDE with workspace management
+- Repository Intelligence (backend/app/repository/) â€” code indexer, search, metrics, parser
+- Workflow Engine (backend/app/workflow/) â€” DAG-based task execution with dispatcher
+- AI Runtime (backend/app/ai/) â€” multi-provider, routing, sessions, context, tools
+- Engineering Engine (backend/app/engineering/) â€” documentation, planning, quality, repair, risk, validator
+- Multi-Agent Engine (backend/app/agents/) â€” registry, orchestrator, planner, communication, review, merge
 - Build system with PyInstaller + Tauri + Inno Setup orchestration
 - Master Control Center and Worker Control Center (Tauri v2 desktop apps)
 - CLI tool (aicluster.exe)
@@ -69,14 +96,14 @@
 - Version info embedded via PyInstaller's own VSVersionInfo classes
 - npm invocation on Windows uses .cmd resolution
 - Cargo toolchain path resolution on standard installations
-- Bundle identifier format for Tauri apps (underscores → hyphens)
+- Bundle identifier format for Tauri apps (underscores â†’ hyphens)
 - Pre-installer gate verifies real PE binaries before packaging
 
-## v1.2.1 — Master Audit System
+## v1.2.1 â€” Master Audit System
 **Date:** 2026-07-03
 
-### Added — Audit System (Zero Breaking Changes)
-- **New module**: `backend/app/audit/` — entirely additive, no existing files modified
+### Added â€” Audit System (Zero Breaking Changes)
+- **New module**: `backend/app/audit/` â€” entirely additive, no existing files modified
 - **4 new database tables**: audit_logs (26 fields), audit_settings, audit_exports, audit_retention
 - **AuditService**: Comprehensive logging with log(), log_event(), search(), export(), purge(), statistics(), settings management
 - **EventBus**: Lightweight publisher/subscriber for decoupled audit events. Components publish events, AuditService subscribes
@@ -89,7 +116,7 @@
 - **Statistics**: Total events, today, this week, critical/errors/warnings counts, success rate, by category, by severity
 - **Settings**: Retention days, auto-purge, export format, max log size, critical notifications
 
-### API Endpoints (10 new — all under `/api/v1/audit`)
+### API Endpoints (10 new â€” all under `/api/v1/audit`)
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/api/v1/audit/logs` | List audit logs |
@@ -103,19 +130,19 @@
 | POST | `/api/v1/audit/settings` | Update settings |
 
 ### Zero Breaking Changes Verification
-- ✅ No existing files modified
-- ✅ No existing routes modified
-- ✅ No existing database tables altered
-- ✅ No existing APIs changed
-- ✅ No existing dashboard pages modified
-- ✅ 44/44 existing tests continue passing
-- ✅ 14/14 worker tests continue passing
-- ✅ All audit modules import cleanly
+- âœ… No existing files modified
+- âœ… No existing routes modified
+- âœ… No existing database tables altered
+- âœ… No existing APIs changed
+- âœ… No existing dashboard pages modified
+- âœ… 44/44 existing tests continue passing
+- âœ… 14/14 worker tests continue passing
+- âœ… All audit modules import cleanly
 
-## v1.2.0 — AICluster Studio (Visual IDE & Workspace)
+## v1.2.0 â€” AICluster Studio (Visual IDE & Workspace)
 **Date:** 2026-07-03
 
-### Added — AICluster Studio Backend
+### Added â€” AICluster Studio Backend
 - **Studio API**: RESTful API for workspace and project management under `/api/v1/studio/*`
 - **Workspace Management**: Create, list, get, delete workspaces with layout persistence
 - **Project Management**: Create, list, delete projects within workspaces, bookmarks system
@@ -124,7 +151,7 @@
 - **History**: Action audit trail with searchable history
 - **6 new database tables**: studio_workspaces, studio_projects, studio_layouts, studio_bookmarks, studio_preferences, studio_history
 
-### Added — AICluster Studio Frontend
+### Added â€” AICluster Studio Frontend
 - **React + TypeScript + TailwindCSS + Vite** project scaffolded at `studio/`
 - **Dependencies**: @tanstack/react-query, zustand, framer-motion, lucide-react, react-resizable-panels
 - **Tauri v2 ready**: @tauri-apps/api and @tauri-apps/cli configured for desktop packaging
@@ -133,27 +160,27 @@
 ### Studio Architecture
 ```
 AICluster Studio (Tauri v2 Desktop App)
-├── Workspace Manager
-│   ├── Multiple Workspaces
-│   ├── Recent Projects
-│   └── Layout Persistence
-├── Project Explorer
-│   ├── Repository View
-│   ├── Files & Folders
-│   └── Bookmarks
-├── Monaco Editor (code editing)
-├── Terminal (PowerShell, CMD, Git Bash)
-├── AI Chat Panel (repository-aware)
-├── Workflow Designer (React Flow)
-├── Agent Designer
-├── Prompt Studio
-├── Plugin Center
-├── Model Manager
-├── Worker Manager
-├── Live Dashboard
-├── Repository Viewer (dependency/call/knowledge graphs)
-├── Command Palette (Ctrl+Shift+P)
-└── Settings (theme, language, keyboard, AI, workers, cluster)
+â”œâ”€â”€ Workspace Manager
+â”‚   â”œâ”€â”€ Multiple Workspaces
+â”‚   â”œâ”€â”€ Recent Projects
+â”‚   â””â”€â”€ Layout Persistence
+â”œâ”€â”€ Project Explorer
+â”‚   â”œâ”€â”€ Repository View
+â”‚   â”œâ”€â”€ Files & Folders
+â”‚   â””â”€â”€ Bookmarks
+â”œâ”€â”€ Monaco Editor (code editing)
+â”œâ”€â”€ Terminal (PowerShell, CMD, Git Bash)
+â”œâ”€â”€ AI Chat Panel (repository-aware)
+â”œâ”€â”€ Workflow Designer (React Flow)
+â”œâ”€â”€ Agent Designer
+â”œâ”€â”€ Prompt Studio
+â”œâ”€â”€ Plugin Center
+â”œâ”€â”€ Model Manager
+â”œâ”€â”€ Worker Manager
+â”œâ”€â”€ Live Dashboard
+â”œâ”€â”€ Repository Viewer (dependency/call/knowledge graphs)
+â”œâ”€â”€ Command Palette (Ctrl+Shift+P)
+â””â”€â”€ Settings (theme, language, keyboard, AI, workers, cluster)
 ```
 
 ### API Endpoints (11 new)
@@ -167,22 +194,22 @@ AICluster Studio (Tauri v2 Desktop App)
 | GET | `/api/v1/studio/preferences/{id}` | Get preferences |
 | POST | `/api/v1/studio/bookmarks` | Add bookmark |
 
-## v1.1.0 — Developer Ecosystem, Plugin SDK & Enterprise Foundation
+## v1.1.0 â€” Developer Ecosystem, Plugin SDK & Enterprise Foundation
 **Date:** 2026-07-03
 
-### Added — Plugin System Core
+### Added â€” Plugin System Core
 - **Plugin Registry**: In-memory registry for plugin lifecycle management (register, activate, disable, uninstall)
 - **Plugin Manifest**: `plugin.json` specification with plugin_id, name, version, author, dependencies, permissions, hooks, capabilities, entry_point, platform compatibility
 - **Plugin Loader**: Dynamic Python module loading from `plugins/` directory with import isolation
-- **Plugin Lifecycle**: Install → Validate → Load → Initialize → Register Hooks → Run → Pause → Resume → Unload → Uninstall
+- **Plugin Lifecycle**: Install â†’ Validate â†’ Load â†’ Initialize â†’ Register Hooks â†’ Run â†’ Pause â†’ Resume â†’ Unload â†’ Uninstall
 - **16 plugin types**: workflow, agent, tool, repository, parser, language, llm_provider, dashboard, metrics, worker, scheduler, notification, auth, storage, visualization, custom
 
-### Added — Hook System
+### Added â€” Hook System
 - **HookRegistry**: Register callbacks for 15 platform hooks (on_startup, on_shutdown, on_workflow_start/finish, on_task_start/finish, on_repository_scan, on_repository_indexed, on_agent_created, on_llm_response, on_tool_execution, on_worker_connected/disconnected, on_backup, on_restore)
 - **Async hook execution**: All hooks run asynchronously with priority ordering and error isolation
 - **Hook discovery**: List registered hooks and their plugins via API
 
-### Added — Platform SDK
+### Added â€” Platform SDK
 - **Plugin API**: Every plugin receives logger, configuration, database access, workflow/repository/AI/agent/tool/worker/artifact/metrics APIs
 - **Plugin validation**: Manifest validation (plugin type, hooks, entry_point), platform compatibility (min/max version), dependency checking
 - **Plugin sandbox**: Architecture for isolated execution with file/network/tool/memory/CPU restrictions
@@ -206,21 +233,21 @@ AICluster Studio (Tauri v2 Desktop App)
 ### Architecture
 ```
 plugins/
-├── example-metrics-reporter/   # Example plugin
-│   ├── plugin.json              # Manifest (id, version, hooks, permissions)
-│   └── main.py                  # Plugin class with lifecycle hooks
-└── ... (future plugins)
+â”œâ”€â”€ example-metrics-reporter/   # Example plugin
+â”‚   â”œâ”€â”€ plugin.json              # Manifest (id, version, hooks, permissions)
+â”‚   â””â”€â”€ main.py                  # Plugin class with lifecycle hooks
+â””â”€â”€ ... (future plugins)
 ```
 
-## v1.0.0 — Production Release
+## v1.0.0 â€” Production Release
 **Date:** 2026-07-03
 
-### Added — Production Readiness
+### Added â€” Production Readiness
 - **Monitoring Service**: Real-time system metrics (CPU, RAM, Disk, Network), cluster metrics (workers, workflows, tasks), AI runtime metrics. All accessible via API and dashboard
 - **Health System**: 10 subsystem health checks (master, worker, workflow, repository, AI runtime, agents, database, websocket, cache, artifact store). Each reports healthy/degraded with latency and dependencies
 - **Diagnostics Service**: 10 automated checks (system, python, dependencies, database, worker, network, repository, AI runtime, model, permissions). Each returns PASS/WARNING/FAILED with fix suggestions
-- **One-Click Installers**: `scripts/install-master.ps1` and `scripts/install-worker.ps1` — automated Python, venv, dependency, and configuration setup
-- **Release Checklist**: `docs/release-checklist.md` — comprehensive v1.0.0 verification checklist
+- **One-Click Installers**: `scripts/install-master.ps1` and `scripts/install-worker.ps1` â€” automated Python, venv, dependency, and configuration setup
+- **Release Checklist**: `docs/release-checklist.md` â€” comprehensive v1.0.0 verification checklist
 
 ### Production API Endpoints (8 new)
 | Method | Path | Description |
@@ -245,10 +272,10 @@ plugins/
 - Backup & restore procedures documented
 - Monitoring & health dashboards ready
 
-## v0.9.0 — Phase 9: Autonomous Software Engineering Engine
+## v0.9.0 â€” Phase 9: Autonomous Software Engineering Engine
 **Date:** 2026-07-03
 
-### Added — Autonomous Software Engineering Engine
+### Added â€” Autonomous Software Engineering Engine
 - **10 new database tables**: engineering_plans, engineering_tasks, engineering_patches, engineering_validations, engineering_repairs, engineering_quality, engineering_approvals, engineering_metrics, engineering_reports
 - **Goal Analyzer**: Keyword-based intent classification (feature, bug_fix, refactor, update, documentation), risk level detection (low/medium/high/critical), auto-approval requirement
 - **Engineering Planner**: Creates implementation plans from natural language goals, generates task chains with role assignments, estimates effort and affected files
@@ -261,9 +288,9 @@ plugins/
 
 ### Pipeline
 ```
-User Goal → Goal Analyzer (risk/type) → Planner (tasks/files)
-  → Validate (7 checks) → Execute (patch) → Quality Gates (9 checks)
-  → Self-Repair (max 3 iterations) → Documentation → Report
+User Goal â†’ Goal Analyzer (risk/type) â†’ Planner (tasks/files)
+  â†’ Validate (7 checks) â†’ Execute (patch) â†’ Quality Gates (9 checks)
+  â†’ Self-Repair (max 3 iterations) â†’ Documentation â†’ Report
 ```
 
 ### API: 10 New Endpoints
@@ -282,35 +309,35 @@ User Goal → Goal Analyzer (risk/type) → Planner (tasks/files)
 | POST | `/api/v1/engineering/approve` | Approve plan |
 
 ### WebSocket Broadcasts
-- `plan_ready` — Plan created
-- `validation_done` — Validation complete
-- `repair_done` — Repair iteration complete
-- `workflow_completed` — Entire engineering workflow done
+- `plan_ready` â€” Plan created
+- `validation_done` â€” Validation complete
+- `repair_done` â€” Repair iteration complete
+- `workflow_completed` â€” Entire engineering workflow done
 
-## v0.8.0 — Phase 8: Local LLM Integration & Autonomous Coding Engine
+## v0.8.0 â€” Phase 8: Local LLM Integration & Autonomous Coding Engine
 **Date:** 2026-07-03
 
-### Added — Concrete LLM Provider Implementations
-- **OllamaProvider**: Full implementation — load, generate, stream, token_count, health. Supports any Ollama-hosted model (qwen3-coder, deepseek, llama3, gemma3, phi, mistral). Auto-discovers installed models via `/api/tags`
-- **LlamaCppProvider**: Full implementation — load, generate, stream, tokenize, health. Connects to any llama.cpp server via HTTP API. Supports streaming via SSE
-- **OpenAICompatibleProvider**: Full implementation — load, generate, stream, tokenize, health. Works with any OpenAI-compatible endpoint (vLLM, LM Studio, NVIDIA NIM, DeepSeek API, etc.). API key authentication, model auto-discovery
+### Added â€” Concrete LLM Provider Implementations
+- **OllamaProvider**: Full implementation â€” load, generate, stream, token_count, health. Supports any Ollama-hosted model (qwen3-coder, deepseek, llama3, gemma3, phi, mistral). Auto-discovers installed models via `/api/tags`
+- **LlamaCppProvider**: Full implementation â€” load, generate, stream, tokenize, health. Connects to any llama.cpp server via HTTP API. Supports streaming via SSE
+- **OpenAICompatibleProvider**: Full implementation â€” load, generate, stream, tokenize, health. Works with any OpenAI-compatible endpoint (vLLM, LM Studio, NVIDIA NIM, DeepSeek API, etc.). API key authentication, model auto-discovery
 
-### Added — Model Router
-- **Task-based routing**: Routes requests by task type (code_generation → Qwen Coder, architecture_review → DeepSeek, documentation → Gemma, summarization → Phi)
+### Added â€” Model Router
+- **Task-based routing**: Routes requests by task type (code_generation â†’ Qwen Coder, architecture_review â†’ DeepSeek, documentation â†’ Gemma, summarization â†’ Phi)
 - **Model Profiles**: 5 profiles (fast, balanced, maximum_quality, offline_low_ram, custom) with configurable max_tokens and temperature
-- **Fallback chain**: Preferred provider → alternate provider → any loaded provider → clear error message
+- **Fallback chain**: Preferred provider â†’ alternate provider â†’ any loaded provider â†’ clear error message
 - **Provider auto-registration**: Registered on first chat request
 
-### Added — Context Optimization
+### Added â€” Context Optimization
 - **ContextRanker**: Relevance-scored symbol/file retrieval, token budget enforcement
 - **ContextCompressor**: Truncation with ratio-based compression when exceeding token limits
 - **SlidingWindow**: Splits large content into overlapping chunks for long-context handling
 
-### Added — Chat & Completion Endpoints
-- `POST /api/v1/ai/chat/llm` — Chat with any local LLM, supports repository context, session history, task routing
-- `POST /api/v1/ai/complete` — Simple text completion
-- `GET /api/v1/ai/providers` — List available providers with capabilities
-- `GET /api/v1/ai/runtime/status` — Complete runtime status with loaded instances
+### Added â€” Chat & Completion Endpoints
+- `POST /api/v1/ai/chat/llm` â€” Chat with any local LLM, supports repository context, session history, task routing
+- `POST /api/v1/ai/complete` â€” Simple text completion
+- `GET /api/v1/ai/providers` â€” List available providers with capabilities
+- `GET /api/v1/ai/runtime/status` â€” Complete runtime status with loaded instances
 
 ### Offline-First Architecture
 - No internet required after model installation
@@ -319,15 +346,15 @@ User Goal → Goal Analyzer (risk/type) → Planner (tasks/files)
 - Workflow engine works entirely offline
 - Multi-agent orchestration works entirely offline
 
-## v0.7.0 — Phase 7: Multi-Agent Orchestration Engine
+## v0.7.0 â€” Phase 7: Multi-Agent Orchestration Engine
 **Date:** 2026-07-03
 
-### Added — Multi-Agent Orchestration Engine
+### Added â€” Multi-Agent Orchestration Engine
 - **10 new database tables**: agents, agent_tasks, agent_messages, agent_reviews, agent_merges, agent_memory_store, agent_metrics
 - **Agent Registry**: Dynamic registration with unique ID, role, capabilities, permissions, model preference. Agents register once, reusable across workflows
 - **12 Default Agents**: Planner, Architect, Backend/ Frontend/ Database/ DevOps/ Security Engineer, QA Engineer, Documentation Writer, Reviewer, Merger, Project Manager
 - **Planning Engine**: Task decomposition by request type (backend, frontend, api, database, fullstack). Creates execution DAG with dependency chains
-- **Orchestrator**: Central coordinator — receives request, plans, assigns agents, monitors progress, triggers review + merge. Never implements work itself
+- **Orchestrator**: Central coordinator â€” receives request, plans, assigns agents, monitors progress, triggers review + merge. Never implements work itself
 - **Agent Communication**: Structured message passing with 9 message types (task_request, task_result, question, review, approval, artifact, error, status, heartbeat). Full inbox/conversation tracking
 - **Review Engine**: 7 quality gates (correctness, architecture, security, performance, style, tests, documentation). Produces quantitative score and pass/fail
 - **Merge Engine**: Collects all agent outputs, resolves conflicts, produces unified result
@@ -351,87 +378,87 @@ User Goal → Goal Analyzer (risk/type) → Planner (tasks/files)
 | Project Manager | manager | management, coordination, planning |
 
 ### API: 14 New Endpoints
-- `POST /api/v1/agents/run` — Run agent orchestration
-- `POST /api/v1/agents/run/sync` — Run synchronous orchestration
-- `GET /api/v1/agents` — List agents
-- `GET /api/v1/agents/{id}` — Get agent details
-- `POST /api/v1/agents/register` — Register new agent
-- `POST /api/v1/agents/seed` — Seed default 12 agents
-- `POST /api/v1/agents/{id}/pause` — Pause agent
-- `POST /api/v1/agents/{id}/resume` — Resume agent
-- `POST /api/v1/agents/{id}/disable` — Disable agent
-- `GET /api/v1/agents/messages` — Get messages
-- `GET /api/v1/agents/tasks` — Get agent tasks
-- `GET /api/v1/agents/memory` — Get agent memory
-- `GET /api/v1/agents/metrics` — Get agent metrics
+- `POST /api/v1/agents/run` â€” Run agent orchestration
+- `POST /api/v1/agents/run/sync` â€” Run synchronous orchestration
+- `GET /api/v1/agents` â€” List agents
+- `GET /api/v1/agents/{id}` â€” Get agent details
+- `POST /api/v1/agents/register` â€” Register new agent
+- `POST /api/v1/agents/seed` â€” Seed default 12 agents
+- `POST /api/v1/agents/{id}/pause` â€” Pause agent
+- `POST /api/v1/agents/{id}/resume` â€” Resume agent
+- `POST /api/v1/agents/{id}/disable` â€” Disable agent
+- `GET /api/v1/agents/messages` â€” Get messages
+- `GET /api/v1/agents/tasks` â€” Get agent tasks
+- `GET /api/v1/agents/memory` â€” Get agent memory
+- `GET /api/v1/agents/metrics` â€” Get agent metrics
 
 ### WebSocket Broadcasts
-- `agent_registered` — When agent registers
-- `agent_workflow_started` — Orchestration begins
-- `agent_task_completed` — Individual task done
+- `agent_registered` â€” When agent registers
+- `agent_workflow_started` â€” Orchestration begins
+- `agent_task_completed` â€” Individual task done
 
 ### Architecture
 ```
-User → POST /agents/run → Orchestrator → Planning Agent (decompose)
-  → Assign Agents → Each Agent executes → Review → Merge
-  → Return final output
+User â†’ POST /agents/run â†’ Orchestrator â†’ Planning Agent (decompose)
+  â†’ Assign Agents â†’ Each Agent executes â†’ Review â†’ Merge
+  â†’ Return final output
 ```
-No actual LLM integration — agents use the AI Runtime abstraction layer.
+No actual LLM integration â€” agents use the AI Runtime abstraction layer.
 
-## v0.6.0 — Phase 6: AI Runtime Platform
+## v0.6.0 â€” Phase 6: AI Runtime Platform
 **Date:** 2026-07-03
 
-### Added — AI Runtime Architecture
+### Added â€” AI Runtime Architecture
 - **16 new database tables**: ai_models, ai_sessions, ai_messages, prompt_templates, tool_definitions, tool_calls, ai_memory, ai_provider_config, runtime_metrics
 - **Model Provider Interface**: Abstract `ModelProvider` base class with `load()`, `unload()`, `generate()`, `stream()`, `token_count()`, `health()`, `configuration()`, `capabilities()`
-- **Model Registry**: Provider-agnostic registry — register any provider by name, instantiate on demand, provider discovery
+- **Model Registry**: Provider-agnostic registry â€” register any provider by name, instantiate on demand, provider discovery
 - **Session Manager**: Create, get, delete, list sessions with 24h expiry, automatic timeout
 - **Conversation Manager**: Add messages, get history, token tracking, session touch
 - **Prompt Builder**: Build prompts with system prompt, repository context, session history, token estimation, compression detection
-- **Context Builder**: Integrates with Repository Intelligence — retrieves relevant symbols, files, and metrics based on user query
+- **Context Builder**: Integrates with Repository Intelligence â€” retrieves relevant symbols, files, and metrics based on user query
 - **Tool Registry**: Abstract `BaseTool` interface for tool calling. Tools have name, description, schema, execute method. Built-in tool discovery.
 - **Model Router**: Architecture for selecting best model based on task, context size, capabilities
 - **Runtime Metrics**: Track prompt build time, context retrieval, tokens, tool calls across sessions
 
-### Added — API Endpoints (16 new)
-- `POST /api/v1/ai/chat` — Chat with AI Runtime
-- `POST /api/v1/ai/session` — Create session
-- `GET /api/v1/ai/session` — List sessions
-- `DELETE /api/v1/ai/session/{id}` — Delete session
-- `GET /api/v1/ai/session/{id}/history` — Get conversation history
-- `GET /api/v1/ai/models` — List registered models
-- `POST /api/v1/ai/models/register` — Register a model
-- `POST /api/v1/ai/models/load` — Load a model provider
-- `POST /api/v1/ai/models/unload` — Unload a model provider
-- `GET /api/v1/ai/runtime` — Runtime status with loaded providers
-- `GET /api/v1/ai/metrics` — Runtime metrics
-- `GET /api/v1/ai/tools` — List available tools
-- `POST /api/v1/ai/tool/execute` — Execute a tool
-- `GET /api/v1/ai/context` — Build repository context
-- `GET /api/v1/ai/prompt` — Inspect prompt building
+### Added â€” API Endpoints (16 new)
+- `POST /api/v1/ai/chat` â€” Chat with AI Runtime
+- `POST /api/v1/ai/session` â€” Create session
+- `GET /api/v1/ai/session` â€” List sessions
+- `DELETE /api/v1/ai/session/{id}` â€” Delete session
+- `GET /api/v1/ai/session/{id}/history` â€” Get conversation history
+- `GET /api/v1/ai/models` â€” List registered models
+- `POST /api/v1/ai/models/register` â€” Register a model
+- `POST /api/v1/ai/models/load` â€” Load a model provider
+- `POST /api/v1/ai/models/unload` â€” Unload a model provider
+- `GET /api/v1/ai/runtime` â€” Runtime status with loaded providers
+- `GET /api/v1/ai/metrics` â€” Runtime metrics
+- `GET /api/v1/ai/tools` â€” List available tools
+- `POST /api/v1/ai/tool/execute` â€” Execute a tool
+- `GET /api/v1/ai/context` â€” Build repository context
+- `GET /api/v1/ai/prompt` â€” Inspect prompt building
 
 ### WebSocket Broadcasts
-- `generation_started` — When AI generation begins
-- `model_loaded` / `model_unloaded` — When models are loaded/unloaded
+- `generation_started` â€” When AI generation begins
+- `model_loaded` / `model_unloaded` â€” When models are loaded/unloaded
 
 ### Architecture
 ```
-User → POST /ai/chat → Session Manager → Prompt Builder
-  → Context Builder (Repository Intelligence)
-  → Model Router → Model Provider (via Registry)
-  → Tool Calls → Workflow Engine
-  → Conversation Manager (store)
+User â†’ POST /ai/chat â†’ Session Manager â†’ Prompt Builder
+  â†’ Context Builder (Repository Intelligence)
+  â†’ Model Router â†’ Model Provider (via Registry)
+  â†’ Tool Calls â†’ Workflow Engine
+  â†’ Conversation Manager (store)
 ```
 
 ### Provider-Ready
 - Dual-registration: backend DB models register available models, `ModelRegistry` registers provider classes
 - Adding a new model requires only: implement `ModelProvider` interface, call `ModelRegistry.register_provider()`
-- No LLM integration included — runtime ready for DeepSeek, Qwen, Llama, Gemma, Mistral, Phi, etc.
+- No LLM integration included â€” runtime ready for DeepSeek, Qwen, Llama, Gemma, Mistral, Phi, etc.
 
-## v0.5.0 — Phase 5: Repository Intelligence Platform
+## v0.5.0 â€” Phase 5: Repository Intelligence Platform
 **Date:** 2026-07-03
 
-### Added — Repository Engine (Core)
+### Added â€” Repository Engine (Core)
 - **18 new database tables**: repositories, repository_files, symbols, symbol_imports, symbol_references, dependency_edges, code_metrics, knowledge_nodes, knowledge_edges, repository_cache, repository_events
 - **File Scanner**: Language detection (Python, TS, JS, JSON, Markdown, YAML, HTML, CSS, SQL, Go, Rust, Java +15 more), .gitignore-aware, binary detection via null-byte check, SHA256 content hashing
 - **Symbol Parser**: Python AST parser (classes, functions, async functions, variables, decorators, annotations), TypeScript/JavaScript regex parser (functions, classes, interfaces, types, imports), generic regex fallback for other languages
@@ -440,21 +467,21 @@ User → POST /ai/chat → Session Manager → Prompt Builder
 - **Code Metrics**: LOC, cyclomatic complexity, symbol counts, language distribution, maintainability index, most complex files, per-file metrics
 - **Repository Health**: Large file detection, high complexity detection, status reporting
 
-### Added — API Endpoints (15 new)
-- `POST /api/v1/repositories` — Register repository
-- `GET /api/v1/repositories` — List repositories
-- `GET /api/v1/repositories/{id}` — Get repository details
-- `DELETE /api/v1/repositories/{id}` — Delete repository
-- `POST /api/v1/repositories/{id}/scan` — Scan repository
-- `POST /api/v1/repositories/{id}/rescan` — Full rescan
-- `GET /api/v1/repositories/{id}/symbols` — Get symbols
-- `GET /api/v1/repositories/{id}/dependencies` — File dependency graph
-- `GET /api/v1/repositories/{id}/metrics` — Code metrics
-- `GET /api/v1/repositories/{id}/health` — Repository health
-- `GET /api/v1/repositories/{id}/files` — List files
-- `GET /api/v1/repositories/{id}/file/{file_id}/metrics` — Per-file metrics
-- `GET /api/v1/repositories/{id}/knowledge` — Knowledge graph
-- `GET /api/v1/repositories/search` — Unified search (symbol/file/text/reference)
+### Added â€” API Endpoints (15 new)
+- `POST /api/v1/repositories` â€” Register repository
+- `GET /api/v1/repositories` â€” List repositories
+- `GET /api/v1/repositories/{id}` â€” Get repository details
+- `DELETE /api/v1/repositories/{id}` â€” Delete repository
+- `POST /api/v1/repositories/{id}/scan` â€” Scan repository
+- `POST /api/v1/repositories/{id}/rescan` â€” Full rescan
+- `GET /api/v1/repositories/{id}/symbols` â€” Get symbols
+- `GET /api/v1/repositories/{id}/dependencies` â€” File dependency graph
+- `GET /api/v1/repositories/{id}/metrics` â€” Code metrics
+- `GET /api/v1/repositories/{id}/health` â€” Repository health
+- `GET /api/v1/repositories/{id}/files` â€” List files
+- `GET /api/v1/repositories/{id}/file/{file_id}/metrics` â€” Per-file metrics
+- `GET /api/v1/repositories/{id}/knowledge` â€” Knowledge graph
+- `GET /api/v1/repositories/search` â€” Unified search (symbol/file/text/reference)
 
 ### Supported Languages (Phase 5)
 - **Full parser**: Python (AST-based), TypeScript, JavaScript
@@ -467,34 +494,34 @@ User → POST /ai/chat → Session Manager → Prompt Builder
 - Incremental indexing via file hash comparison
 - Distributed-ready for worker-based scanning (Phase 6)
 
-## v0.4.0 — Phase 4: Distributed Compute Engine
+## v0.4.0 â€” Phase 4: Distributed Compute Engine
 **Date:** 2026-07-03
 
-### Added — Workflow Engine (Core)
+### Added â€” Workflow Engine (Core)
 - **Workflow database models**: 9 new tables (workflows, workflow_tasks, task_dependencies, workflow_results, artifacts, execution_metrics, cache, workflow_events, worker_capabilities)
 - **WorkflowPlanner**: DAG generation, dependency resolution, duration estimation, sequential/parallel/fan-out/fan-in support
 - **TaskDispatcher**: Worker assignment based on load, status, capabilities; round-robin fallback; task requeue for retries
-- **WorkflowEngine**: Full orchestration — create, plan, dispatch, execute, retry, cancel workflows
-- **State machines**: Workflow states (PENDING → COMPLETED/FAILED) and Task states (CREATED → SUCCESS/CANCELLED) with validation
+- **WorkflowEngine**: Full orchestration â€” create, plan, dispatch, execute, retry, cancel workflows
+- **State machines**: Workflow states (PENDING â†’ COMPLETED/FAILED) and Task states (CREATED â†’ SUCCESS/CANCELLED) with validation
 - **Retry engine**: Exponential backoff (5s, 30s, 60s, max 3 attempts), automatic delayed requeue
 - **ArtifactStore**: File-based artifact storage with SHA256 checksums, content-addressable paths
 - **Cache service**: Time-based cache keyed by workflow type, task type, and input hash
 - **Metrics service**: Execution metrics recording, queue statistics, worker utilization
 
-### Added — API Endpoints (18 new)
-- `POST /api/v1/workflow` — Create workflow
-- `GET /api/v1/workflow` — List workflows
-- `GET /api/v1/workflow/{id}` — Get workflow with DAG
-- `DELETE /api/v1/workflow/{id}` — Cancel workflow
-- `POST /api/v1/workflow/{id}/pause` — Pause workflow
-- `POST /api/v1/workflow/{id}/resume` — Resume workflow
-- `POST /api/v1/workflow/{id}/cancel` — Cancel workflow
-- `GET /api/v1/workflow/{id}/tasks` — Get workflow tasks
-- `GET /api/v1/workflow/{id}/artifacts` — Get workflow artifacts
-- `GET /api/v1/workflow/{id}/metrics` — Get workflow metrics
-- `GET /api/v1/workflow/queue` — Queue statistics
-- `GET /api/v1/workflow/history` — Execution history
-- `GET /api/v1/workflow/workers/capabilities` — Worker capabilities
+### Added â€” API Endpoints (18 new)
+- `POST /api/v1/workflow` â€” Create workflow
+- `GET /api/v1/workflow` â€” List workflows
+- `GET /api/v1/workflow/{id}` â€” Get workflow with DAG
+- `DELETE /api/v1/workflow/{id}` â€” Cancel workflow
+- `POST /api/v1/workflow/{id}/pause` â€” Pause workflow
+- `POST /api/v1/workflow/{id}/resume` â€” Resume workflow
+- `POST /api/v1/workflow/{id}/cancel` â€” Cancel workflow
+- `GET /api/v1/workflow/{id}/tasks` â€” Get workflow tasks
+- `GET /api/v1/workflow/{id}/artifacts` â€” Get workflow artifacts
+- `GET /api/v1/workflow/{id}/metrics` â€” Get workflow metrics
+- `GET /api/v1/workflow/queue` â€” Queue statistics
+- `GET /api/v1/workflow/history` â€” Execution history
+- `GET /api/v1/workflow/workers/capabilities` â€” Worker capabilities
 
 ### WebSocket Broadcasts
 - Workflow created, dispatching, finished, failed, cancelled
@@ -504,7 +531,7 @@ User → POST /ai/chat → Session Manager → Prompt Builder
 - 9 new workflow tables created automatically via `init_db()`
 - Indexes on workflow_id, status, task_id, worker_id for query performance
 
-## v0.3.5 — Phase 3.5: Cluster Operations Platform
+## v0.3.5 â€” Phase 3.5: Cluster Operations Platform
 **Date:** 2026-07-03
 
 ### Added
@@ -524,21 +551,21 @@ User → POST /ai/chat → Session Manager → Prompt Builder
 - **18 new API endpoints** under `/api/` for cluster operations
 
 ### Backend
-- `master-control-center/backend/app/api/router.py` — All cluster API endpoints
-- `master-control-center/backend/app/main.py` — FastAPI entry point on port 8800
+- `master-control-center/backend/app/api/router.py` â€” All cluster API endpoints
+- `master-control-center/backend/app/main.py` â€” FastAPI entry point on port 8800
 
 ### Frontend
-- `master-control-center/frontend/src/pages/` — 11 pages (Dashboard, Workers, Jobs, Cluster, Discovery, Backups, Diagnostics, Notifications, Logs, Settings, About)
+- `master-control-center/frontend/src/pages/` â€” 11 pages (Dashboard, Workers, Jobs, Cluster, Discovery, Backups, Diagnostics, Notifications, Logs, Settings, About)
 - React + TypeScript + TailwindCSS + React Query + Zustand
 - Dark glassmorphism theme matching AICluster design system
 
-## v0.3.0 — Phase 3A: Worker Communication Service
+## v0.3.0 â€” Phase 3A: Worker Communication Service
 **Date:** 2026-07-03
 
 ### Added
 - **Worker service**: Full implementation with state machine, registration, heartbeat, job polling, execution, progress reporting, and result reporting
-- **Shared protocol models**: `shared/protocol/` with RegisterRequest, HeartbeatRequest, NextJobResponse, ProgressRequest, ResultRequest — used by both Master and Worker
-- **Worker state machine**: STARTING → LOADING_CONFIG → CONNECTING → REGISTERING → ONLINE → HEARTBEAT → POLL_JOB → EXECUTING → REPORT_PROGRESS → REPORT_RESULT with NETWORK_FAILURE/RETRY recovery
+- **Shared protocol models**: `shared/protocol/` with RegisterRequest, HeartbeatRequest, NextJobResponse, ProgressRequest, ResultRequest â€” used by both Master and Worker
+- **Worker state machine**: STARTING â†’ LOADING_CONFIG â†’ CONNECTING â†’ REGISTERING â†’ ONLINE â†’ HEARTBEAT â†’ POLL_JOB â†’ EXECUTING â†’ REPORT_PROGRESS â†’ REPORT_RESULT with NETWORK_FAILURE/RETRY recovery
 - **Worker executor framework**: JobRegistry + BaseJobHandler with 5 default handlers (echo, sleep, dir_scan, hash_file, count_files)
 - **Backend endpoints**: `GET /workers/{id}/next-job` (job polling), `POST /workers/{id}/progress` (progress reporting), `POST /workers/{id}/result` (result reporting)
 - **Worker logging**: RotatingFileHandler (10MB, 5 backups), structured format with worker_id/job_id context
@@ -553,7 +580,7 @@ User → POST /ai/chat → Session Manager → Prompt Builder
 - `backend/app/services/scheduler.py`: Added `get_next_for_worker()` and `complete_job()` methods
 - `backend/app/schemas/__init__.py`: Added `NextJobResponse`, `ProgressRequest`, `ResultRequest` schemas
 
-## v0.2.1 — Phase 2.1: Stability, Bug Fixes & Production Hardening
+## v0.2.1 â€” Phase 2.1: Stability, Bug Fixes & Production Hardening
 **Date:** 2026-07-03
 
 ### Fixed
@@ -582,7 +609,7 @@ User → POST /ai/chat → Session Manager → Prompt Builder
 - `backend/app/websocket/manager.py`: Added `max_connections` limit, early return on empty broadcast
 - `backend/app/main.py`: WebSocket endpoint now handles ping/pong and uses `finally` for guaranteed cleanup
 
-## v0.2.0 — Phase 2: Master Server
+## v0.2.0 â€” Phase 2: Master Server
 **Date:** 2026-07-02
 
 ### Added
@@ -620,7 +647,7 @@ User → POST /ai/chat → Session Manager → Prompt Builder
 - Missing favicon
 - Unused imports (Network, Info, router)
 
-## v0.1.0 — Phase 1: Project Structure
+## v0.1.0 â€” Phase 1: Project Structure
 **Date:** 2026-06-30
 
 ### Added

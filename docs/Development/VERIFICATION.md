@@ -1,4 +1,4 @@
-# AICluster Release Verification System
+﻿# AICluster Release Verification System
 
 The verification layer runs **after every successful build** and
 confirms that every generated executable, installer and required
@@ -26,7 +26,7 @@ artifact it inspects. It only writes:
 | **frontend**     | every frontend's `package.json` parses, has a build script, built bundle is on disk, Tauri executables exist |
 | **checksums**    | regenerated SHA-256 hashes match `release/checksums/checksums.txt` and `manifest.json` |
 | **installer**    | `AIClusterSetup.exe` exists in `dist/` and `artifacts/`, is a valid PE; Inno Setup script has every required section |
-| **backend**      | launches `AIClusterMaster.exe`, waits up to 20s for port 8000, hits `GET /api/v1/health`, shuts down; same for `AIClusterWorker.exe` |
+| **backend**      | launches `AIClusterRuntime.exe --mode master`, waits up to 20s for port 8000, hits `GET /api/v1/health`, shuts down; same for `AIClusterRuntime.exe --mode worker` |
 | **api**          | live HTTP probes against `/api/v1/health`, `/openapi.json`, `/docs`, `/redoc` |
 
 ## Quick start
@@ -96,22 +96,22 @@ All defaults are environment variables:
 
 ```
 build/verification/
-├── __init__.py
-├── utils.py            shared logging, timing, process helpers
-├── context.py          VerifierContext + tunables
-├── verify_report.py    VerificationResult, VerificationReport, status enum
-├── verify.py           top-level orchestrator
-├── verify_build.py     stage 1 - build presence
-├── verify_artifacts.py stage 2 - release folder layout
-├── verify_executables.py  stage 3 - every required exe
-├── verify_config.py    stage 4 - configuration files
-├── verify_python.py    stage 5 - Python runtime
-├── verify_frontend.py  stage 6 - frontend bundles + Tauri smoke tests
-├── verify_checksums.py stage 7 - checksum regeneration
-├── verify_installer.py stage 8 - AIClusterSetup.exe + Inno script
-├── verify_backend.py   stage 9 - Master + Worker launch + health
-├── verify_api.py       stage 10 - live HTTP probes
-└── README.md           this file
+â”œâ”€â”€ __init__.py
+â”œâ”€â”€ utils.py            shared logging, timing, process helpers
+â”œâ”€â”€ context.py          VerifierContext + tunables
+â”œâ”€â”€ verify_report.py    VerificationResult, VerificationReport, status enum
+â”œâ”€â”€ verify.py           top-level orchestrator
+â”œâ”€â”€ verify_build.py     stage 1 - build presence
+â”œâ”€â”€ verify_artifacts.py stage 2 - release folder layout
+â”œâ”€â”€ verify_executables.py  stage 3 - every required exe
+â”œâ”€â”€ verify_config.py    stage 4 - configuration files
+â”œâ”€â”€ verify_python.py    stage 5 - Python runtime
+â”œâ”€â”€ verify_frontend.py  stage 6 - frontend bundles + Tauri smoke tests
+â”œâ”€â”€ verify_checksums.py stage 7 - checksum regeneration
+â”œâ”€â”€ verify_installer.py stage 8 - AIClusterSetup.exe + Inno script
+â”œâ”€â”€ verify_backend.py   stage 9 - Master + Worker launch + health
+â”œâ”€â”€ verify_api.py       stage 10 - live HTTP probes
+â””â”€â”€ README.md           this file
 ```
 
 ## Report format

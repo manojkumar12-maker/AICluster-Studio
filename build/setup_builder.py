@@ -216,8 +216,7 @@ def _stage_aicluster() -> bool:
             "Placeholder mode has been removed; rebuild the application."
         )
 
-    for sub in ("master", "worker", "studio",
-                "master-control", "worker-control", "cli"):
+    for sub in ("runtime", "studio"):
         src = release / sub
         dst = PAYLOAD_AICLUSTER / sub
         if dst.exists():

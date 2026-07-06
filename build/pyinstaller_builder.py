@@ -297,7 +297,7 @@ def _build_with_collect_all(target, version: VersionInfo) -> Path:
         "--clean",
         "--onefile",
         "--name", target.output_name.replace(".exe", ""),
-        "--console",
+        "--windowed" if not target.console else "--console",
         "--workpath", str(build_dir),
         "--specpath", str(spec_dir),
         "--distpath", str(dist_dir),
@@ -318,6 +318,7 @@ def _build_with_collect_all(target, version: VersionInfo) -> Path:
         "--collect-all", "starlette",
         "--collect-all", "sniffio",
         "--collect-all", "websockets",
+        "--collect-all", "slowapi",
     ]
     if target.icon and target.icon.exists():
         cmd += ["--icon", str(target.icon)]
@@ -357,7 +358,7 @@ def build_target(target, version: VersionInfo) -> Path:
     .spec file.
     """
     # Targets that need full package collection: use the CLI.
-    if target.key in ("master", "worker"):
+    if target.key in ("master", "worker", "runtime"):
         return _build_with_collect_all(target, version)
     return _build_with_spec(target, version)
 

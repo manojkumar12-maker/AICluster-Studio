@@ -1,4 +1,4 @@
-# Assets
+﻿# Assets
 
 This folder contains shared resources used by the build system and the
 generated applications.
@@ -9,8 +9,8 @@ Place ICO / PNG / SVG icons here. The build system picks up:
 
 | File                   | Used by                                                  |
 |------------------------|----------------------------------------------------------|
-| `master.ico`           | `AIClusterMaster.exe`                                    |
-| `worker.ico`           | `AIClusterWorker.exe`                                    |
+| `master.ico`           | `AIClusterRuntime.exe --mode master`                                    |
+| `worker.ico`           | `AIClusterRuntime.exe --mode worker`                                    |
 | `master-control.ico`   | `MasterControlCenter.exe` (Tauri)                        |
 | `worker-control.ico`   | `WorkerControlCenter.exe` (Tauri)                        |
 | `studio.ico`           | `AIClusterStudio.exe` (Tauri)                            |

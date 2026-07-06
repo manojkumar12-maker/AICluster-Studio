@@ -1,14 +1,14 @@
-# PROJECT AIM — AICluster
+﻿# PROJECT AIM â€” AICluster
 
 ## 1. Executive Summary
 
-AICluster is a private, offline-first AI compute platform that transforms idle Windows PCs on a local network into a unified, intelligent compute cluster. It enables distributed AI workloads — code analysis, repository intelligence, multi-agent software engineering, workflow orchestration, and LLM-powered assistance — entirely within a LAN environment, with no cloud dependency, no subscriptions, and no data leaving the network.
+AICluster is a private, offline-first AI compute platform that transforms idle Windows PCs on a local network into a unified, intelligent compute cluster. It enables distributed AI workloads â€” code analysis, repository intelligence, multi-agent software engineering, workflow orchestration, and LLM-powered assistance â€” entirely within a LAN environment, with no cloud dependency, no subscriptions, and no data leaving the network.
 
 The project is currently at version 1.3.0, having progressed through 11 development phases from initial scaffolding (v0.1.0) through to a production-ready platform with a comprehensive audit system, Studio IDE, plugin system, AI runtime, repository intelligence, and multi-agent orchestration.
 
 ## 2. Core Purpose
 
-AICluster exists to solve a specific, practical problem: modern organizations have dozens or hundreds of Windows workstations sitting idle for significant portions of the day. These machines collectively represent substantial compute capacity — CPU cycles, RAM, and disk — that is entirely wasted. Simultaneously, these same organizations increasingly need AI compute for code analysis, documentation generation, bug detection, and software engineering automation.
+AICluster exists to solve a specific, practical problem: modern organizations have dozens or hundreds of Windows workstations sitting idle for significant portions of the day. These machines collectively represent substantial compute capacity â€” CPU cycles, RAM, and disk â€” that is entirely wasted. Simultaneously, these same organizations increasingly need AI compute for code analysis, documentation generation, bug detection, and software engineering automation.
 
 The central insight is that these two problems are complementary: the idle compute capacity of office workstations can be harnessed to run AI workloads, provided the solution respects the primary user's experience (no slowdowns, no interference) and operates entirely within the organization's network (no data exfiltration, no cloud dependency).
 
@@ -20,7 +20,7 @@ The long-term vision of AICluster is to become the standard private AI compute l
 
 **An autonomous software engineering platform** that can accept high-level natural language goals ("add user authentication", "refactor the payment module", "generate API documentation") and decompose them into parallel tasks executed by specialized AI agents across the distributed worker fleet.
 
-**A local-first AI development environment** where every component — the LLM inference, the repository analysis, the workflow engine, the agent communication — runs on local hardware using local models. No internet connection required after initial setup.
+**A local-first AI development environment** where every component â€” the LLM inference, the repository analysis, the workflow engine, the agent communication â€” runs on local hardware using local models. No internet connection required after initial setup.
 
 **An extensible platform** where plugins can add new job types, analysis pipelines, notification hooks, deployment targets, and LLM providers without modifying core code.
 
@@ -28,18 +28,18 @@ The long-term vision of AICluster is to become the standard private AI compute l
 
 ### 4.1 Offline-First Philosophy
 
-AICluster is designed from the ground up to operate without internet connectivity. This is not an afterthought or a feature toggle — it is a fundamental architectural constraint. Every subsystem must function fully offline:
+AICluster is designed from the ground up to operate without internet connectivity. This is not an afterthought or a feature toggle â€” it is a fundamental architectural constraint. Every subsystem must function fully offline:
 
 - **Database**: SQLite, no external database server required
 - **LLM Inference**: Local providers only (Ollama, llama.cpp, OpenAI-compatible local endpoints)
-- **Repository Intelligence**: Local scanning, parsing, and indexing — no GitHub API dependency
+- **Repository Intelligence**: Local scanning, parsing, and indexing â€” no GitHub API dependency
 - **Agent Communication**: In-process message passing via database, no external message broker
 - **Plugin System**: Local file-based discovery and loading, no package registry dependency
 - **Authentication**: Local JWT with bcrypt, no OAuth provider dependency
 
 The only internet dependencies are during initial setup (pip install, npm install) and optional model downloads. Once configured, AICluster runs fully disconnected.
 
-**Why offline-first matters**: Enterprise software development involves proprietary source code, internal architecture discussions, and sensitive business logic. Sending this data to cloud APIs is unacceptable for many organizations. AICluster eliminates this concern entirely — the code never leaves the LAN.
+**Why offline-first matters**: Enterprise software development involves proprietary source code, internal architecture discussions, and sensitive business logic. Sending this data to cloud APIs is unacceptable for many organizations. AICluster eliminates this concern entirely â€” the code never leaves the LAN.
 
 ### 4.2 Why Distributed Computing
 
@@ -50,7 +50,7 @@ Modern codebases are too large for single-machine analysis. A 500,000-line monor
 - **Horizontal scaling**: Adding compute capacity means adding more worker machines, not upgrading hardware
 - **Fault tolerance**: If one worker goes offline (user leaves, machine sleeps), other workers continue processing
 
-The architecture targets 4-100 worker nodes — the typical range for a mid-size engineering organization. It explicitly does not target cloud-scale (10,000+ nodes) to avoid the complexity of Kubernetes-style orchestration.
+The architecture targets 4-100 worker nodes â€” the typical range for a mid-size engineering organization. It explicitly does not target cloud-scale (10,000+ nodes) to avoid the complexity of Kubernetes-style orchestration.
 
 ### 4.3 Why Windows Workers
 
@@ -68,11 +68,11 @@ The master node can run on any platform FastAPI supports (Windows, Linux, macOS)
 
 A plugin system was chosen over a monolithic architecture because:
 
-- **Domain separation**: Different teams need different capabilities — security teams need SAST plugins, DevOps needs deployment plugins, QA needs test automation plugins
+- **Domain separation**: Different teams need different capabilities â€” security teams need SAST plugins, DevOps needs deployment plugins, QA needs test automation plugins
 - **Release independence**: Plugins can be developed, tested, and deployed independently of the core platform
 - **Ecosystem growth**: A plugin marketplace enables community contributions without core code access
 - **Customization**: Organizations can write internal plugins for proprietary tools, workflows, and integrations
-- **Stability**: Plugin failures are isolated — a crashing plugin does not bring down the master server
+- **Stability**: Plugin failures are isolated â€” a crashing plugin does not bring down the master server
 
 The plugin system provides 16 plugin types, 15 platform hooks, a manifest specification, and a lifecycle manager. Plugins are Python packages with a `Plugin` class that registers hook callbacks.
 
@@ -108,12 +108,12 @@ Local LLMs are chosen over cloud APIs for four fundamental reasons:
 
 1. **Data privacy**: Source code, engineering plans, and architectural discussions never leave the LAN
 2. **Latency**: Local inference eliminates network round-trips, providing sub-second response for small prompts
-3. **Cost**: No per-token pricing — local models run on existing hardware with no marginal cost
+3. **Cost**: No per-token pricing â€” local models run on existing hardware with no marginal cost
 4. **Reliability**: No API rate limits, no service outages, no vendor lock-in
 
 AICluster supports three provider interfaces: Ollama (easiest setup, broadest model support), llama.cpp (lightweight, CPU-optimized), and OpenAI-compatible endpoints (for vLLM, LM Studio, or hybrid deployments). The Model Router selects the optimal provider based on task type, context size, and quality requirements.
 
-A key design choice is that the AI Runtime is interface-driven rather than implementation-driven. The `ModelProvider` abstract base class defines `load()`, `generate()`, `stream()`, `token_count()`, and `health()` methods. Any provider implementing this interface can be registered at runtime. This means AICluster is not locked into any specific model or provider — it can adapt as the local LLM ecosystem evolves.
+A key design choice is that the AI Runtime is interface-driven rather than implementation-driven. The `ModelProvider` abstract base class defines `load()`, `generate()`, `stream()`, `token_count()`, and `health()` methods. Any provider implementing this interface can be registered at runtime. This means AICluster is not locked into any specific model or provider â€” it can adapt as the local LLM ecosystem evolves.
 
 ### 4.8 Architectural Principles
 
@@ -123,9 +123,9 @@ A key design choice is that the AI Runtime is interface-driven rather than imple
 
 **Everything is observable**: Every heartbeat, every job, every error is logged and visible in the dashboard. Three logging layers exist: database-backed structured logs, audit events with 17 categories, and real-time WebSocket broadcasts.
 
-**Failure is expected**: Workers go offline, jobs fail, network connections drop. The system handles all of this gracefully — workers auto-reconnect with exponential backoff, jobs retry up to 3 times, the master detects offline workers within 15 seconds.
+**Failure is expected**: Workers go offline, jobs fail, network connections drop. The system handles all of this gracefully â€” workers auto-reconnect with exponential backoff, jobs retry up to 3 times, the master detects offline workers within 15 seconds.
 
-**Security by default**: JWT authentication, bcrypt password hashing, CORS restrictions, input validation. The default configuration is secure — users must explicitly weaken security settings.
+**Security by default**: JWT authentication, bcrypt password hashing, CORS restrictions, input validation. The default configuration is secure â€” users must explicitly weaken security settings.
 
 **Scales down, not up**: Designed for 4-100 workers, not 10,000. Simplicity over complexity. SQLite instead of PostgreSQL, simple file-based artifacts instead of S3, in-process scheduling instead of Celery.
 
@@ -137,7 +137,7 @@ The project maintains a strict quality bar:
 - Zero build errors: next build, tsc --noEmit, and all Python imports produce zero errors and zero warnings
 - API responses under 200ms at p95 under normal load
 - Dashboard updates every 2 seconds via polling + WebSocket push
-- Worker failure does not cascade — master continues operating when any worker disconnects
+- Worker failure does not cascade â€” master continues operating when any worker disconnects
 
 ## 5. Long-Term Goals
 
@@ -176,7 +176,7 @@ The project maintains a strict quality bar:
 - **Multi-tenant SaaS**: No signup pages, no billing, no org management. One cluster, one team.
 - **Container orchestrator**: This is not Kubernetes. AICluster manages Windows processes, not Docker containers.
 - **General-purpose compute**: AICluster focuses on AI-assisted software engineering workloads. It is not a general-purpose distributed compute platform.
-- **Replacement for developer workstations**: AICluster augments developer workstations with distributed compute — it does not replace local development environments.
+- **Replacement for developer workstations**: AICluster augments developer workstations with distributed compute â€” it does not replace local development environments.
 
 ## 6. Detailed Architecture Breakdown
 
@@ -201,15 +201,15 @@ The worker agent runs on each Windows machine in the cluster. It is a FastAPI ap
 **Worker API** (port 8001): Provides a health endpoint for local monitoring. The primary work happens in the background, not through the API.
 
 **Worker Lifecycle** (background asyncio task):
-1. STARTING — Application starts, imports are loaded
-2. LOADING_CONFIG — Configuration loaded from env vars, config.json, .env, and defaults
-3. CONNECTING — HTTP client created, connecting to master URL
-4. REGISTERING — POST to `/workers/register` with hostname and IP. Retries with exponential backoff on failure
-5. ONLINE — Successfully registered. Heartbeat service and job poller started
-6. HEARTBEAT — Every 5 seconds, sends CPU, RAM, disk, network metrics to master
-7. POLL_JOB — Every 5 seconds, polls master for next job assignment
-8. EXECUTING — Job received, handler invoked with job payload
-9. REPORT_RESULT — Job completed, result sent to master
+1. STARTING â€” Application starts, imports are loaded
+2. LOADING_CONFIG â€” Configuration loaded from env vars, config.json, .env, and defaults
+3. CONNECTING â€” HTTP client created, connecting to master URL
+4. REGISTERING â€” POST to `/workers/register` with hostname and IP. Retries with exponential backoff on failure
+5. ONLINE â€” Successfully registered. Heartbeat service and job poller started
+6. HEARTBEAT â€” Every 5 seconds, sends CPU, RAM, disk, network metrics to master
+7. POLL_JOB â€” Every 5 seconds, polls master for next job assignment
+8. EXECUTING â€” Job received, handler invoked with job payload
+9. REPORT_RESULT â€” Job completed, result sent to master
 
 **State Machine**: The worker implements a 21-state state machine covering normal operation, network failure recovery, registration retry, and graceful shutdown. States are mutually exclusive and transitions are validated.
 
@@ -322,6 +322,6 @@ The worker agent runs on each Windows machine in the cluster. It is a FastAPI ap
 
 ## 8. Conclusion
 
-AICluster represents a novel approach to AI-assisted software engineering: instead of sending code to cloud APIs, it brings AI compute to the code. By harnessing the idle compute capacity of existing Windows workstations, it provides a scalable, private, and cost-effective platform for distributed AI workloads. The architecture prioritizes simplicity, observability, and user invisibility over feature breadth. Every design decision — from offline-first operation to plugin extensibility — serves the central mission: turning idle Windows PCs into a private AI compute cluster.
+AICluster represents a novel approach to AI-assisted software engineering: instead of sending code to cloud APIs, it brings AI compute to the code. By harnessing the idle compute capacity of existing Windows workstations, it provides a scalable, private, and cost-effective platform for distributed AI workloads. The architecture prioritizes simplicity, observability, and user invisibility over feature breadth. Every design decision â€” from offline-first operation to plugin extensibility â€” serves the central mission: turning idle Windows PCs into a private AI compute cluster.
 
-The platform at v1.3.0 demonstrates comprehensive coverage across 11 development phases with 50+ database tables, 50+ API endpoints, 3 frontend applications, a fully functional worker agent, 3 LLM provider implementations, 12 default AI agents, 10 engineering validation checks, 15 plugin hook points, and a complete audit system. The primary areas for future investment are security hardening (authentication enforcement), scalability improvements (beyond 100 workers), and completing the partial implementations in the production monitoring subsystem.
+The platform at v2.0.0 demonstrates comprehensive coverage across 11 development phases with 50+ database tables, 50+ API endpoints, 3 frontend applications, a fully functional worker agent, 3 LLM provider implementations, 12 default AI agents, 10 engineering validation checks, 15 plugin hook points, and a complete audit system. The primary areas for future investment are security hardening (authentication enforcement), scalability improvements (beyond 100 workers), and completing the partial implementations in the production monitoring subsystem.

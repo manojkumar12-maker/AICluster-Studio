@@ -17,7 +17,7 @@ REM Move into the repo root (one level up from this script).
 pushd "%~dp0\.."
 
 echo.
-echo  AICluster v1.2.2 - Production Build
+echo  AICluster v2.0.0 - Production Build
 echo  =====================================
 echo  Repo root: %CD%
 echo.

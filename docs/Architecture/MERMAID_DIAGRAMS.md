@@ -1,4 +1,4 @@
-# Mermaid.js Architecture Diagrams
+﻿# Mermaid.js Architecture Diagrams
 
 This document contains all system architecture diagrams for AICluster, rendered via [Mermaid.js](https://mermaid.js.org/). Paste any diagram block into a Mermaid-compatible viewer (GitHub markdown, [Mermaid Live Editor](https://mermaid.live/), or documentation tool).
 
@@ -11,15 +11,15 @@ This document contains all system architecture diagrams for AICluster, rendered 
 | a | Overall System Architecture | Master server with Workers, Desktop apps, Web frontend, CLI |
 | b | Master Internal Components | FastAPI, WebSocket, SQLite, Workflow, AI, Agents, Plugins |
 | c | Worker State Machine | Full lifecycle from STARTING to EXIT |
-| d | Worker Registration Sequence | Worker → Master → ID storage |
-| e | Heartbeat Sequence | Worker → Master → WebSocket broadcast |
-| f | Job Execution Flow | Queue → Poll → Execute → Report |
-| g | AI Runtime Architecture | Prompt → Router → Provider → Response |
-| h | Multi-Agent Flow | Request → Plan → Execute → Review → Merge |
-| i | Workflow DAG Execution | Create → Plan → Dispatch → Execute |
-| j | Build Pipeline | Source → PyInstaller/Tauri → Release |
+| d | Worker Registration Sequence | Worker â†’ Master â†’ ID storage |
+| e | Heartbeat Sequence | Worker â†’ Master â†’ WebSocket broadcast |
+| f | Job Execution Flow | Queue â†’ Poll â†’ Execute â†’ Report |
+| g | AI Runtime Architecture | Prompt â†’ Router â†’ Provider â†’ Response |
+| h | Multi-Agent Flow | Request â†’ Plan â†’ Execute â†’ Review â†’ Merge |
+| i | Workflow DAG Execution | Create â†’ Plan â†’ Dispatch â†’ Execute |
+| j | Build Pipeline | Source â†’ PyInstaller/Tauri â†’ Release |
 | k | Database Schema Relationships | All master tables with relationships |
-| l | Startup Sequence | Installer → Master → Workers → UI → Ready |
+| l | Startup Sequence | Installer â†’ Master â†’ Workers â†’ UI â†’ Ready |
 
 ---
 
@@ -46,7 +46,7 @@ flowchart TD
         MASTER --- WS
     end
 
-    subgraph WorkerNodes["Worker Nodes (N × Windows PCs)"]
+    subgraph WorkerNodes["Worker Nodes (N Ã— Windows PCs)"]
         W1["Worker 1\n(Python async)"]
         W2["Worker 2\n(Python async)"]
         WN["Worker N\n(Python async)"]
@@ -329,7 +329,7 @@ flowchart TD
     end
 
     MODEL --> Security
-    Security -->|"Filtered Response"| OUTPUT["Formatted Response\n→ User"]
+    Security -->|"Filtered Response"| OUTPUT["Formatted Response\nâ†’ User"]
 
     subgraph Support["Support Layers"]
         PROMPT_ENG["PromptEngine\nTemplate Rendering"]
@@ -367,7 +367,7 @@ flowchart TD
     REVIEWER -->|"Validated"| MERGER["AgentMerge\nConflict Resolution &\nOutput Assembly"]
     REVIEWER -->|"Failed"| PLANNER
 
-    MERGER --> FINAL["Final Output\n→ User"]
+    MERGER --> FINAL["Final Output\nâ†’ User"]
 
     subgraph AgentServices["Shared Agent Infrastructure"]
         AGENT_MGR["AgentManager\nLifecycle & State"]
@@ -446,9 +446,9 @@ flowchart TD
     SOURCE["Source Code\nbackend/ worker/ studio/ frontend/ cli/"] --> BUILD["Build Script\npython -m build.build"]
 
     subgraph Builder["Build Process"]
-        PYINSTALLER["PyInstaller\nPython → .exe"]
-        TAURI["Tauri v2\nRust → .exe"]
-        FE_BUILD["Next.js 15\nnpm run build → static/"]
+        PYINSTALLER["PyInstaller\nPython â†’ .exe"]
+        TAURI["Tauri v2\nRust â†’ .exe"]
+        FE_BUILD["Next.js 15\nnpm run build â†’ static/"]
     end
 
     BUILD --> PYINSTALLER
@@ -467,7 +467,7 @@ flowchart TD
     PKG --> VERIFY["Verification\n(setup_validator.py)"]
     VERIFY -->|"SHA256 checksums\nInstall test\nContent audit"| FINAL_VERIFIED["Verified Release"]
 
-    FINAL_VERIFIED --> RELEASE_TAG["Git Tag\nv1.3.0"]
+    FINAL_VERIFIED --> RELEASE_TAG["Git Tag\nv2.0.0"]
     RELEASE_TAG --> GITHUB["GitHub Release\nAssets: .exe, .sha256, Release Notes"]
 
     subgraph Checks["Quality Gates"]
@@ -684,7 +684,7 @@ erDiagram
 ```mermaid
 flowchart TD
     INSTALL["Installer Launched\nsetup_builder.exe"] -->|"T+0s"| EXTRACT["Extract Binaries\nC:\\Program Files\\AICluster\\"]
-    EXTRACT -->|"T+5s"| MASTER_START["AIClusterMaster.exe\nState: STARTING"]
+    EXTRACT -->|"T+5s"| MASTER_START["AIClusterRuntime.exe --mode master\nState: STARTING"]
 
     MASTER_START -->|"T+6s"| DB_INIT["Database Init\ninit_db() called"]
     DB_INIT -->|"CREATE ALL TABLES"| DB_TABLES["30+ Tables Created\nworkers, jobs, users, ..."]

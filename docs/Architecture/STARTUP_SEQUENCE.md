@@ -1,4 +1,4 @@
-# STARTUP SEQUENCE — Full System Boot Timeline
+﻿# STARTUP SEQUENCE â€” Full System Boot Timeline
 
 ## 1. Overview
 
@@ -19,237 +19,237 @@ Legend:
 
 
 TIME  COMPONENT                          STATE / ACTION
-────  ───────────────────────────────────────────────────────────────────────────
+â”€â”€â”€â”€  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 T+0s  [Installer]                        {Launched by user}
-        │
-        ├── Extract Python 3.12          {Install Python if absent}
-        ├── Install VC++ Redist          {Install VC++ redistributable}
-        ├── Create dirs                  {C:\Program Files\AICluster\*}
-        ├── Extract binaries             {master/, worker/, studio/, cli/}
-        ├── Configure firewall           {Open ports 8000, 8001, 3000}
-        ├── Create shortcuts             {Start Menu items}
-        └── Launch AIClusterMaster.exe   {Auto-launch on install complete}
+        â”‚
+        â”œâ”€â”€ Extract Python 3.12          {Install Python if absent}
+        â”œâ”€â”€ Install VC++ Redist          {Install VC++ redistributable}
+        â”œâ”€â”€ Create dirs                  {C:\Program Files\AICluster\*}
+        â”œâ”€â”€ Extract binaries             {master/, worker/, studio/, cli/}
+        â”œâ”€â”€ Configure firewall           {Open ports 8000, 8001, 3000}
+        â”œâ”€â”€ Create shortcuts             {Start Menu items}
+        â””â”€â”€ Launch AIClusterRuntime.exe --mode master   {Auto-launch on install complete}
 
-T+5s  [AIClusterMaster.exe]             {STARTING}
-        │
-        ├── Load environment config      {config/*.yaml, .env}
-        ├── Initialize SQLAlchemy engine  {sqlite+aiosqlite:///data/aicluster.db}
-        ├── Create data/log directories  {mkdir data/, logs/}
-        ├── Set up structured logging    {logging_config.py}
-        ├── Load route tables            {import api.v1.router}
-        └── Start FastAPI lifespan       {lifespan() async context manager}
+T+5s  [AIClusterRuntime.exe --mode master]             {STARTING}
+        â”‚
+        â”œâ”€â”€ Load environment config      {config/*.yaml, .env}
+        â”œâ”€â”€ Initialize SQLAlchemy engine  {sqlite+aiosqlite:///data/aicluster.db}
+        â”œâ”€â”€ Create data/log directories  {mkdir data/, logs/}
+        â”œâ”€â”€ Set up structured logging    {logging_config.py}
+        â”œâ”€â”€ Load route tables            {import api.v1.router}
+        â””â”€â”€ Start FastAPI lifespan       {lifespan() async context manager}
 
 T+6s  [Database Init]                   {INIT_DB}
-        │
-        ├── Create engine                {create_async_engine(sqlite)}
-        ├── Import all model classes
-        │     ├── worker (Worker)
-        │     ├── job (Job)
-        │     ├── log (SystemLog)
-        │     ├── user (User)
-        │     ├── workflow (Workflow, WorkflowTask, TaskDependency, ...)
-        │     ├── repository (Repository, RepositoryFile, Symbol, ...)
-        │     ├── ai (AIModel, AISession, AIMessage, ...)
-        │     ├── agent (Agent, AgentTask, AgentMessage, ...)
-        │     ├── engineering (EngineeringPlan, EngineeringTask, ...)
-        │     └── studio (StudioWorkspace, StudioProject, ...)
-        ├── Run Base.metadata.create_all  {CREATE TABLE IF NOT EXISTS}
-        └── Session factory ready         {async_sessionmaker bound}
+        â”‚
+        â”œâ”€â”€ Create engine                {create_async_engine(sqlite)}
+        â”œâ”€â”€ Import all model classes
+        â”‚     â”œâ”€â”€ worker (Worker)
+        â”‚     â”œâ”€â”€ job (Job)
+        â”‚     â”œâ”€â”€ log (SystemLog)
+        â”‚     â”œâ”€â”€ user (User)
+        â”‚     â”œâ”€â”€ workflow (Workflow, WorkflowTask, TaskDependency, ...)
+        â”‚     â”œâ”€â”€ repository (Repository, RepositoryFile, Symbol, ...)
+        â”‚     â”œâ”€â”€ ai (AIModel, AISession, AIMessage, ...)
+        â”‚     â”œâ”€â”€ agent (Agent, AgentTask, AgentMessage, ...)
+        â”‚     â”œâ”€â”€ engineering (EngineeringPlan, EngineeringTask, ...)
+        â”‚     â””â”€â”€ studio (StudioWorkspace, StudioProject, ...)
+        â”œâ”€â”€ Run Base.metadata.create_all  {CREATE TABLE IF NOT EXISTS}
+        â””â”€â”€ Session factory ready         {async_sessionmaker bound}
 
 T+7s  [Auth Bootstrap]                  {SEED_ADMIN}
-        │
-        ├── Check if admin user exists   {SELECT FROM users}
-        ├── Create default admin         {admin / admin123 (bcrypt hashed)}
-        ├── Assign admin role            {role = "admin"}
-        └── Log: "Default admin user seeded"
+        â”‚
+        â”œâ”€â”€ Check if admin user exists   {SELECT FROM users}
+        â”œâ”€â”€ Create default admin         {admin / admin123 (bcrypt hashed)}
+        â”œâ”€â”€ Assign admin role            {role = "admin"}
+        â””â”€â”€ Log: "Default admin user seeded"
 
 T+8s  [Offline Worker Checker]          {STARTING}
-        │
-        ├── asyncio.create_task(check_offline_workers)
-        ├── Loop every 10 seconds
-        │     ├── SELECT workers WHERE last_seen < now - 15s
-        │     ├── UPDATE status = 'offline'
-        │     └── Broadcast worker update via WebSocket
-        └── Log: "Offline worker checker started"
+        â”‚
+        â”œâ”€â”€ asyncio.create_task(check_offline_workers)
+        â”œâ”€â”€ Loop every 10 seconds
+        â”‚     â”œâ”€â”€ SELECT workers WHERE last_seen < now - 15s
+        â”‚     â”œâ”€â”€ UPDATE status = 'offline'
+        â”‚     â””â”€â”€ Broadcast worker update via WebSocket
+        â””â”€â”€ Log: "Offline worker checker started"
 
 T+9s  [WebSocket Manager]               {READY}
-        │
-        ├── FastAPI accepts /ws connections
-        ├── ws_manager.active_connections = []
-        ├── broadcast functions ready
-        └── Log: "WebSocket endpoint ready"
+        â”‚
+        â”œâ”€â”€ FastAPI accepts /ws connections
+        â”œâ”€â”€ ws_manager.active_connections = []
+        â”œâ”€â”€ broadcast functions ready
+        â””â”€â”€ Log: "WebSocket endpoint ready"
 
 T+10s [Scheduler Starts]                {STARTING}
-        │
-        ├── SchedulerService.__init__
-        │     ├── db: AsyncSession reference
-        │     └── self._running = False
-        ├── scheduler.start()
-        │     ├── self._running = True
-        │     └── asyncio.create_task(_scheduler_loop)
-        ├── _scheduler_loop:
-        │     └── while _running:
-        │           ├── _process_queue()
-        │           │     ├── SELECT * FROM jobs WHERE status='queued'
-        │           │     │     ORDER BY priority DESC, created_at ASC
-        │           │     ├── For each job: _find_available_worker(job)
-        │           │     │     ├── SELECT * FROM workers
-        │           │     │     │     WHERE status='online' AND is_paused=0
-        │           │     │     │     ORDER BY cpu_percent ASC LIMIT 1
-        │           │     │     └── If worker found: _assign_job(job, worker)
-        │           │     │           ├── job.status = 'running'
-        │           │     │           ├── job.assigned_worker = worker.id
-        │           │     │           ├── job.started_at = now
-        │           │     │           ├── worker.status = 'busy'
-        │           │     │           ├── worker.current_job = job.id
-        │           │     │           └── Broadcast job update via WebSocket
-        │           │     └── If no worker: skip (job stays queued)
-        │           └── await asyncio.sleep(2)
-        └── Log: "Scheduler started"
+        â”‚
+        â”œâ”€â”€ SchedulerService.__init__
+        â”‚     â”œâ”€â”€ db: AsyncSession reference
+        â”‚     â””â”€â”€ self._running = False
+        â”œâ”€â”€ scheduler.start()
+        â”‚     â”œâ”€â”€ self._running = True
+        â”‚     â””â”€â”€ asyncio.create_task(_scheduler_loop)
+        â”œâ”€â”€ _scheduler_loop:
+        â”‚     â””â”€â”€ while _running:
+        â”‚           â”œâ”€â”€ _process_queue()
+        â”‚           â”‚     â”œâ”€â”€ SELECT * FROM jobs WHERE status='queued'
+        â”‚           â”‚     â”‚     ORDER BY priority DESC, created_at ASC
+        â”‚           â”‚     â”œâ”€â”€ For each job: _find_available_worker(job)
+        â”‚           â”‚     â”‚     â”œâ”€â”€ SELECT * FROM workers
+        â”‚           â”‚     â”‚     â”‚     WHERE status='online' AND is_paused=0
+        â”‚           â”‚     â”‚     â”‚     ORDER BY cpu_percent ASC LIMIT 1
+        â”‚           â”‚     â”‚     â””â”€â”€ If worker found: _assign_job(job, worker)
+        â”‚           â”‚     â”‚           â”œâ”€â”€ job.status = 'running'
+        â”‚           â”‚     â”‚           â”œâ”€â”€ job.assigned_worker = worker.id
+        â”‚           â”‚     â”‚           â”œâ”€â”€ job.started_at = now
+        â”‚           â”‚     â”‚           â”œâ”€â”€ worker.status = 'busy'
+        â”‚           â”‚     â”‚           â”œâ”€â”€ worker.current_job = job.id
+        â”‚           â”‚     â”‚           â””â”€â”€ Broadcast job update via WebSocket
+        â”‚           â”‚     â””â”€â”€ If no worker: skip (job stays queued)
+        â”‚           â””â”€â”€ await asyncio.sleep(2)
+        â””â”€â”€ Log: "Scheduler started"
 
 T+11s [Workflow Engine]                 {STARTING}
-        │
-        ├── WorkflowPlanner ready
-        │     ├── DAG generation from task list
-        │     └── Dependency resolution (topological sort)
-        ├── WorkflowDispatcher ready
-        │     ├── Task-to-worker assignment by capability
-        │     └── Worker capability matching
-        ├── WorkflowExecutor ready
-        │     ├── State machine: PENDING → RUNNING → COMPLETED/FAILED
-        │     ├── Parallel task execution within DAG constraints
-        │     └── Error handling with retry
-        ├── ArtifactManager ready
-        │     ├── SHA256-checksummed artifact storage
-        │     ├── Path: data/artifacts/{workflow_id}/{task_id}/
-        │     └── Metadata stored in `artifacts` table
-        ├── CacheService ready
-        │     ├── TTL-based result caching
-        │     └── Cache key = (task_type, input_hash)
-        └── Log: "Workflow engine initialized"
+        â”‚
+        â”œâ”€â”€ WorkflowPlanner ready
+        â”‚     â”œâ”€â”€ DAG generation from task list
+        â”‚     â””â”€â”€ Dependency resolution (topological sort)
+        â”œâ”€â”€ WorkflowDispatcher ready
+        â”‚     â”œâ”€â”€ Task-to-worker assignment by capability
+        â”‚     â””â”€â”€ Worker capability matching
+        â”œâ”€â”€ WorkflowExecutor ready
+        â”‚     â”œâ”€â”€ State machine: PENDING â†’ RUNNING â†’ COMPLETED/FAILED
+        â”‚     â”œâ”€â”€ Parallel task execution within DAG constraints
+        â”‚     â””â”€â”€ Error handling with retry
+        â”œâ”€â”€ ArtifactManager ready
+        â”‚     â”œâ”€â”€ SHA256-checksummed artifact storage
+        â”‚     â”œâ”€â”€ Path: data/artifacts/{workflow_id}/{task_id}/
+        â”‚     â””â”€â”€ Metadata stored in `artifacts` table
+        â”œâ”€â”€ CacheService ready
+        â”‚     â”œâ”€â”€ TTL-based result caching
+        â”‚     â””â”€â”€ Cache key = (task_type, input_hash)
+        â””â”€â”€ Log: "Workflow engine initialized"
 
 T+12s [AI Runtime]                      {STARTING}
-        │
-        ├── ModelRegistry loaded
-        │     ├── Scan configured providers (llama.cpp, Ollama, custom)
-        │     ├── Validate model availability
-        │     └── Register each model with capabilities
-        ├── PromptTemplateEngine ready
-        │     ├── Load templates from backend/app/ai/prompt/
-        │     └── Template rendering with Jinja2-like syntax
-        ├── SessionManager ready
-        │     ├── Conversation session tracking
-        │     ├── Context window management
-        │     └── History persistence to AISession/AIMessage tables
-        ├── ToolRegistry ready
-        │     ├── Registered tools: code_analysis, file_read, search, git
-        │     └── Each tool: name, description, input_schema, handler
-        ├── Router ready
-        │     ├── Model selection based on task complexity
-        │     └── Load balancing across available model instances
-        └── Log: "AI Runtime initialized"
+        â”‚
+        â”œâ”€â”€ ModelRegistry loaded
+        â”‚     â”œâ”€â”€ Scan configured providers (llama.cpp, Ollama, custom)
+        â”‚     â”œâ”€â”€ Validate model availability
+        â”‚     â””â”€â”€ Register each model with capabilities
+        â”œâ”€â”€ PromptTemplateEngine ready
+        â”‚     â”œâ”€â”€ Load templates from backend/app/ai/prompt/
+        â”‚     â””â”€â”€ Template rendering with Jinja2-like syntax
+        â”œâ”€â”€ SessionManager ready
+        â”‚     â”œâ”€â”€ Conversation session tracking
+        â”‚     â”œâ”€â”€ Context window management
+        â”‚     â””â”€â”€ History persistence to AISession/AIMessage tables
+        â”œâ”€â”€ ToolRegistry ready
+        â”‚     â”œâ”€â”€ Registered tools: code_analysis, file_read, search, git
+        â”‚     â””â”€â”€ Each tool: name, description, input_schema, handler
+        â”œâ”€â”€ Router ready
+        â”‚     â”œâ”€â”€ Model selection based on task complexity
+        â”‚     â””â”€â”€ Load balancing across available model instances
+        â””â”€â”€ Log: "AI Runtime initialized"
 
 T+13s [Plugin Loader]                   {STARTING}
-        │
-        ├── Scan plugins/ directory
-        │     ├── For each subdirectory:
-        │     │     ├── Read plugin.json
-        │     │     ├── Validate: plugin_id, version, permissions, entry_point
-        │     │     ├── Check min_platform_version compatibility
-        │     │     ├── Verify requested permissions against whitelist
-        │     │     └── Import entry_point module
-        │     └── Example: plugins/example-metrics-reporter/
-        │           ├── plugin_id: "example-metrics-reporter"
-        │           ├── hooks: ["on_workflow_finish"]
-        │           └── permissions: ["read_metrics"]
-        ├── Register plugin hooks
-        │     ├── on_workflow_finish → metrics_reporter.handle()
-        │     └── Hook registry: dict[str, list[callable]]
-        ├── Sandbox initialization
-        │     ├── Restricted API surface
-        │     └── Permission enforcement on plugin calls
-        └── Log: "Loaded N plugins"
+        â”‚
+        â”œâ”€â”€ Scan plugins/ directory
+        â”‚     â”œâ”€â”€ For each subdirectory:
+        â”‚     â”‚     â”œâ”€â”€ Read plugin.json
+        â”‚     â”‚     â”œâ”€â”€ Validate: plugin_id, version, permissions, entry_point
+        â”‚     â”‚     â”œâ”€â”€ Check min_platform_version compatibility
+        â”‚     â”‚     â”œâ”€â”€ Verify requested permissions against whitelist
+        â”‚     â”‚     â””â”€â”€ Import entry_point module
+        â”‚     â””â”€â”€ Example: plugins/example-metrics-reporter/
+        â”‚           â”œâ”€â”€ plugin_id: "example-metrics-reporter"
+        â”‚           â”œâ”€â”€ hooks: ["on_workflow_finish"]
+        â”‚           â””â”€â”€ permissions: ["read_metrics"]
+        â”œâ”€â”€ Register plugin hooks
+        â”‚     â”œâ”€â”€ on_workflow_finish â†’ metrics_reporter.handle()
+        â”‚     â””â”€â”€ Hook registry: dict[str, list[callable]]
+        â”œâ”€â”€ Sandbox initialization
+        â”‚     â”œâ”€â”€ Restricted API surface
+        â”‚     â””â”€â”€ Permission enforcement on plugin calls
+        â””â”€â”€ Log: "Loaded N plugins"
 
 T+14s [HTTP Server Bind]                {LISTENING}
-        │
-        ├── uvicorn.bind(host="0.0.0.0", port=8000)
-        ├── Start accepting HTTP connections
-        ├── Start accepting WebSocket upgrades at /ws
-        ├── OpenAPI docs at /docs (Swagger), /redoc (ReDoc)
-        ├── Static file serving for frontend build
-        └── Log: "Uvicorn running on http://0.0.0.0:8000"
+        â”‚
+        â”œâ”€â”€ uvicorn.bind(host="0.0.0.0", port=8000)
+        â”œâ”€â”€ Start accepting HTTP connections
+        â”œâ”€â”€ Start accepting WebSocket upgrades at /ws
+        â”œâ”€â”€ OpenAPI docs at /docs (Swagger), /redoc (ReDoc)
+        â”œâ”€â”€ Static file serving for frontend build
+        â””â”€â”€ Log: "Uvicorn running on http://0.0.0.0:8000"
 
 T+15s [Dashboard Loads]                 {CONNECTING}
-        │
-        ├── User opens http://localhost:3000
-        │     (or localhost:8000 if static build served by FastAPI)
-        ├── Next.js 15 App Router initializes
-        ├── Dark glassmorphism theme renders
-        ├── Zustand auth store checks for persisted JWT
-        │     ├── If JWT exists: validate with GET /api/v1/health
-        │     └── If invalid/missing: redirect to /login
-        └── Loading skeletons appear on dashboard cards
+        â”‚
+        â”œâ”€â”€ User opens http://localhost:3000
+        â”‚     (or localhost:8000 if static build served by FastAPI)
+        â”œâ”€â”€ Next.js 15 App Router initializes
+        â”œâ”€â”€ Dark glassmorphism theme renders
+        â”œâ”€â”€ Zustand auth store checks for persisted JWT
+        â”‚     â”œâ”€â”€ If JWT exists: validate with GET /api/v1/health
+        â”‚     â””â”€â”€ If invalid/missing: redirect to /login
+        â””â”€â”€ Loading skeletons appear on dashboard cards
 
 T+16s [Studio Loads]                    {CONNECTING}
-        │
-        ├── AIClusterStudio.exe (Tauri app) launches
-        ├── Tauri window: 1280x800, frameless/chrome per config
-        ├── Rust backend binds to port 3001
-        ├── Load workspace list from GET /api/v1/studio/workspaces
-        ├── Load project list from GET /api/v1/studio/projects
-        ├── Layout engine restores saved layout
-        │     ├── Grid/panel positions from StudioLayout table
-        │     └── Bookmark restoration
-        └── Editor panels initialize
+        â”‚
+        â”œâ”€â”€ AIClusterStudio.exe (Tauri app) launches
+        â”œâ”€â”€ Tauri window: 1280x800, frameless/chrome per config
+        â”œâ”€â”€ Rust backend binds to port 3001
+        â”œâ”€â”€ Load workspace list from GET /api/v1/studio/workspaces
+        â”œâ”€â”€ Load project list from GET /api/v1/studio/projects
+        â”œâ”€â”€ Layout engine restores saved layout
+        â”‚     â”œâ”€â”€ Grid/panel positions from StudioLayout table
+        â”‚     â””â”€â”€ Bookmark restoration
+        â””â”€â”€ Editor panels initialize
 
 T+17s [User Login]                      {AUTHENTICATING}
-        │
-        ├── User submits credentials (username + password)
-        ├── POST /api/v1/auth/login
-        │     ├── Validate input via LoginRequest schema
-        │     ├── SELECT * FROM users WHERE username = ?
-        │     ├── bcrypt.verify(password, hashed_password)
-        │     └── Generate JWT (python-jose)
-        │           ├── Payload: {sub: user.id, role: user.role, exp: now+60min}
-        │           └── Sign with SECRET_KEY (HS256)
-        ├── Frontend receives JWT
-        │     ├── Store in Zustand auth store
-        │     ├── Persist to localStorage
-        │     └── Set Authorization: Bearer <token> header
-        ├── Redirect to / (dashboard)
-        ├── Establish WebSocket connection to /ws
-        │     ├── ws_manager.connect(websocket)
-        │     └── Receive initial cluster snapshot
-        └── Dashboard renders live data
-              ├── Worker cards with status indicators
-              ├── Job queue table
-              ├── Cluster metrics (CPU, RAM, worker count)
-              └── Real-time updates via WebSocket
+        â”‚
+        â”œâ”€â”€ User submits credentials (username + password)
+        â”œâ”€â”€ POST /api/v1/auth/login
+        â”‚     â”œâ”€â”€ Validate input via LoginRequest schema
+        â”‚     â”œâ”€â”€ SELECT * FROM users WHERE username = ?
+        â”‚     â”œâ”€â”€ bcrypt.verify(password, hashed_password)
+        â”‚     â””â”€â”€ Generate JWT (python-jose)
+        â”‚           â”œâ”€â”€ Payload: {sub: user.id, role: user.role, exp: now+60min}
+        â”‚           â””â”€â”€ Sign with SECRET_KEY (HS256)
+        â”œâ”€â”€ Frontend receives JWT
+        â”‚     â”œâ”€â”€ Store in Zustand auth store
+        â”‚     â”œâ”€â”€ Persist to localStorage
+        â”‚     â””â”€â”€ Set Authorization: Bearer <token> header
+        â”œâ”€â”€ Redirect to / (dashboard)
+        â”œâ”€â”€ Establish WebSocket connection to /ws
+        â”‚     â”œâ”€â”€ ws_manager.connect(websocket)
+        â”‚     â””â”€â”€ Receive initial cluster snapshot
+        â””â”€â”€ Dashboard renders live data
+              â”œâ”€â”€ Worker cards with status indicators
+              â”œâ”€â”€ Job queue table
+              â”œâ”€â”€ Cluster metrics (CPU, RAM, worker count)
+              â””â”€â”€ Real-time updates via WebSocket
 
 T+18s [System Ready]                    {OPERATIONAL}
-        │
-        ├── All subsystems running
-        ├── Dashboard shows live cluster state
-        ├── WebSocket broadcasting updates every 2s
-        ├── Scheduler processing jobs
-        ├── Workers can register and receive jobs
-        ├── AI Runtime ready for inference
-        ├── Workflow Engine ready for orchestration
-        ├── Plugins active and listening for hooks
-        ├── Studio connected and ready
-        └── ──── SYSTEM READY ────
+        â”‚
+        â”œâ”€â”€ All subsystems running
+        â”œâ”€â”€ Dashboard shows live cluster state
+        â”œâ”€â”€ WebSocket broadcasting updates every 2s
+        â”œâ”€â”€ Scheduler processing jobs
+        â”œâ”€â”€ Workers can register and receive jobs
+        â”œâ”€â”€ AI Runtime ready for inference
+        â”œâ”€â”€ Workflow Engine ready for orchestration
+        â”œâ”€â”€ Plugins active and listening for hooks
+        â”œâ”€â”€ Studio connected and ready
+        â””â”€â”€ â”€â”€â”€â”€ SYSTEM READY â”€â”€â”€â”€
 ```
 
 ---
 
 ## 3. Detailed Component Startup
 
-### 3.1 Installer (T+0s – T+5s)
+### 3.1 Installer (T+0s â€“ T+5s)
 
 The installer is produced by `build/setup_builder.py` using Inno Setup 6. It bundles:
-- `python-3.12.7-amd64.exe` — embedded Python installer
-- `vc_redist.x64.exe` — Visual C++ redistributable
+- `python-3.12.7-amd64.exe` â€” embedded Python installer
+- `vc_redist.x64.exe` â€” Visual C++ redistributable
 - Prebuilt executables (PyInstaller + Tauri): master, worker, studio, master-control-center, worker-control-center, CLI
 - Default configuration files from `config/`
 - Assets (icons, manifest, branding)
@@ -258,28 +258,28 @@ The installer writes to `C:\Program Files\AICluster\` with subdirectories:
 
 ```
 C:\Program Files\AICluster\
-├── master\              AIClusterMaster.exe + Python runtime
-├── worker\              AIClusterWorker.exe + Python runtime
-├── studio\              AIClusterStudio.exe (Tauri)
-├── master-control\      MasterControlCenter.exe (Tauri)
-├── worker-control\      WorkerControlCenter.exe (Tauri)
-├── cli\                 aicluster.exe (CLI tool)
-├── config\              Default YAML config files
-└── data\                SQLite database, logs, artifacts
+â”œâ”€â”€ master\              AIClusterRuntime.exe --mode master + Python runtime
+â”œâ”€â”€ worker\              AIClusterRuntime.exe --mode worker + Python runtime
+â”œâ”€â”€ studio\              AIClusterStudio.exe (Tauri)
+â”œâ”€â”€ master-control\      MasterControlCenter.exe (Tauri)
+â”œâ”€â”€ worker-control\      WorkerControlCenter.exe (Tauri)
+â”œâ”€â”€ cli\                 aicluster.exe (CLI tool)
+â”œâ”€â”€ config\              Default YAML config files
+â””â”€â”€ data\                SQLite database, logs, artifacts
 ```
 
 **Failure modes:**
-- Python download fails → installer aborts with network error
-- VC++ redist installation fails → log warning, continue (system may already have it)
-- Disk space insufficient → Inno Setup reports before extraction
-- Antivirus blocks binary → installer exits with code 2
+- Python download fails â†’ installer aborts with network error
+- VC++ redist installation fails â†’ log warning, continue (system may already have it)
+- Disk space insufficient â†’ Inno Setup reports before extraction
+- Antivirus blocks binary â†’ installer exits with code 2
 
 ### 3.2 Master Starts (T+5s)
 
-`AIClusterMaster.exe` bootstraps with:
+`AIClusterRuntime.exe --mode master` bootstraps with:
 
 ```python
-# backend/app/main.py — FastAPI lifespan
+# backend/app/main.py â€” FastAPI lifespan
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
@@ -317,12 +317,12 @@ async def init_db():
         await conn.run_sync(Base.metadata.create_all)
 ```
 
-This creates all 30+ tables in a single transaction. The database is stored at `data/aicluster.db` (SQLite via aiosqlite). No migrations are run — Alembic is installed but not configured; schema changes in v1.x are additive only.
+This creates all 30+ tables in a single transaction. The database is stored at `data/aicluster.db` (SQLite via aiosqlite). No migrations are run â€” Alembic is installed but not configured; schema changes in v1.x are additive only.
 
 **Failure modes:**
-- Database file is locked → retry with exponential backoff
-- Disk full → SQLite raises `sqlite3.OperationalError: database or disk is full`
-- Schema conflict → `create_all` with `IF NOT EXISTS` semantics, no-op on existing
+- Database file is locked â†’ retry with exponential backoff
+- Disk full â†’ SQLite raises `sqlite3.OperationalError: database or disk is full`
+- Schema conflict â†’ `create_all` with `IF NOT EXISTS` semantics, no-op on existing
 
 ### 3.4 Scheduler Starts (T+10s)
 
@@ -341,16 +341,16 @@ class SchedulerService:
 ```
 
 Its responsibilities:
-1. **Queue processing** — Every 2 seconds, scan for `status='queued'` jobs ordered by priority (descending) and creation time (ascending).
-2. **Worker assignment** — For each queued job, find the least-loaded online worker (lowest CPU percentage), or use the job's `assigned_worker` if pre-assigned.
-3. **Job dispatch** — Update job status to `running`, set `started_at`, mark worker as `busy`, broadcast via WebSocket.
+1. **Queue processing** â€” Every 2 seconds, scan for `status='queued'` jobs ordered by priority (descending) and creation time (ascending).
+2. **Worker assignment** â€” For each queued job, find the least-loaded online worker (lowest CPU percentage), or use the job's `assigned_worker` if pre-assigned.
+3. **Job dispatch** â€” Update job status to `running`, set `started_at`, mark worker as `busy`, broadcast via WebSocket.
 
 **Worker selection algorithm:**
 ```
 1. If job has assigned_worker:
-     → Use that worker if online and not paused
+     â†’ Use that worker if online and not paused
 2. If no assigned_worker:
-     → SELECT * FROM workers 
+     â†’ SELECT * FROM workers 
        WHERE status = 'online' AND is_paused = false 
        ORDER BY cpu_percent ASC 
        LIMIT 1
@@ -364,7 +364,7 @@ The workflow engine (`backend/app/workflow/`) processes complex multi-step tasks
 
 ```
 Subsystem               Path                          Purpose
-─────────────────────────────────────────────────────────────────────
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 WorkflowPlanner        workflow/planner/             DAG generation, topological sort
 WorkflowDispatcher     workflow/dispatcher/          Task-to-worker assignment
 WorkflowExecutor       workflow/executor/            Orchestration engine, state machine
@@ -378,27 +378,27 @@ DependencyResolver     workflow/dependencies/        Task dependency graph resol
 The workflow state machine:
 
 ```
-                    ┌──────────┐
-                    │ PENDING  │
-                    └────┬─────┘
-                         │
-                    ┌────▼─────┐
-                    │ QUEUED   │
-                    └────┬─────┘
-                         │ (dependencies met)
-                    ┌────▼─────┐
-                    │ RUNNING  │
-                    └────┬─────┘
-                    ┌────┴────┐
-                    │         │
-               ┌────▼──┐ ┌───▼────┐
-               │COMPLETE│ │ FAILED │
-               │  D     │ │        │
-               └────────┘ └───┬────┘
-                              │ (retry allowed)
-                         ┌────▼─────┐
-                         │  QUEUED  │ (max 3 retries)
-                         └──────────┘
+                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                    â”‚ PENDING  â”‚
+                    â””â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”˜
+                         â”‚
+                    â”Œâ”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”
+                    â”‚ QUEUED   â”‚
+                    â””â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”˜
+                         â”‚ (dependencies met)
+                    â”Œâ”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”
+                    â”‚ RUNNING  â”‚
+                    â””â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”˜
+                    â”Œâ”€â”€â”€â”€â”´â”€â”€â”€â”€â”
+                    â”‚         â”‚
+               â”Œâ”€â”€â”€â”€â–¼â”€â”€â” â”Œâ”€â”€â”€â–¼â”€â”€â”€â”€â”
+               â”‚COMPLETEâ”‚ â”‚ FAILED â”‚
+               â”‚  D     â”‚ â”‚        â”‚
+               â””â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”¬â”€â”€â”€â”€â”˜
+                              â”‚ (retry allowed)
+                         â”Œâ”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”
+                         â”‚  QUEUED  â”‚ (max 3 retries)
+                         â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ### 3.6 AI Runtime (T+12s)
@@ -444,7 +444,7 @@ for plugin_dir in plugins.iterdir():
 
 **Plugin isolation model:**
 - Each plugin runs in a sub-interpreter with restricted globals.
-- Hook invocations are wrapped in try/except — a plugin exception does not crash the master.
+- Hook invocations are wrapped in try/except â€” a plugin exception does not crash the master.
 - Permission checks are enforced at hook dispatch time.
 - Plugins cannot import arbitrary modules; only the allowed API surface is exposed.
 
@@ -453,11 +453,11 @@ for plugin_dir in plugins.iterdir():
 Worker startup is documented in full in `WORKER_ARCHITECTURE.md`. At a high level:
 
 ```
-1. Worker process starts → state = STARTING
-2. Load config from config.json → state = LOADING_CONFIG
-3. Connect to master HTTP API → state = CONNECTING
-4. POST /api/v1/workers/register → state = REGISTERING
-5. Receive worker_id → state = ONLINE
+1. Worker process starts â†’ state = STARTING
+2. Load config from config.json â†’ state = LOADING_CONFIG
+3. Connect to master HTTP API â†’ state = CONNECTING
+4. POST /api/v1/workers/register â†’ state = REGISTERING
+5. Receive worker_id â†’ state = ONLINE
 6. Start heartbeat loop (POST /api/v1/workers/heartbeat every 5s)
 7. Start job poll loop (GET /api/v1/workers/{id}/next-job every 5s)
 8. Execute assigned jobs
@@ -535,43 +535,43 @@ The system is declared `OPERATIONAL` when:
 ## 4. Component Dependency Graph
 
 ```
-                    ┌──────────────┐
-                    │  Installer   │
-                    └──────┬───────┘
-                           │
-                    ┌──────▼───────┐
-                    │  SQLite DB   │
-                    │  (data dir)  │
-                    └──────┬───────┘
-                           │
-              ┌────────────┼────────────┐
-              │            │            │
-        ┌─────▼─────┐ ┌───▼────┐ ┌────▼─────┐
-        │ Auth       │ │ Worker │ │ Scheduler │
-        │ Service    │ │ Manager│ │ Service   │
-        └─────┬──────┘ └───┬────┘ └────┬─────┘
-              │            │            │
-        ┌─────▼─────┐ ┌───▼────┐ ┌────▼─────┐
-        │ WebSocket │ │ Master │ │ Job Queue │
-        │ Manager   │ │ API    │ │           │
-        └─────┬──────┘ └───┬────┘ └──────────┘
-              │            │
-        ┌─────▼─────┐ ┌───▼──────────────┐
-        │ Dashboard │ │ Workflow Engine  │
-        │ (Frontend)│ │ ┌──────────────┐ │
-        └───────────┘ │ │ Planner      │ │
-                      │ │ Dispatcher   │ │
-              ┌───────┤ │ Executor     │ │
-              │       │ │ Artifacts    │ │
-        ┌─────▼─────┐ │ │ Cache        │ │
-        │ AI Runtime│ │ └──────────────┘ │
-        │ ┌───────┐ │ └──────────────────┘
-        │ │Models │ │
-        │ │Router │ │
-        │ │Tools  │ │
-        │ │Memory │ │
-        │ └───────┘ │
-        └───────────┘
+                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                    â”‚  Installer   â”‚
+                    â””â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”˜
+                           â”‚
+                    â”Œâ”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”
+                    â”‚  SQLite DB   â”‚
+                    â”‚  (data dir)  â”‚
+                    â””â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”˜
+                           â”‚
+              â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+              â”‚            â”‚            â”‚
+        â”Œâ”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â–¼â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”
+        â”‚ Auth       â”‚ â”‚ Worker â”‚ â”‚ Scheduler â”‚
+        â”‚ Service    â”‚ â”‚ Managerâ”‚ â”‚ Service   â”‚
+        â””â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”¬â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”˜
+              â”‚            â”‚            â”‚
+        â”Œâ”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â–¼â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”
+        â”‚ WebSocket â”‚ â”‚ Master â”‚ â”‚ Job Queue â”‚
+        â”‚ Manager   â”‚ â”‚ API    â”‚ â”‚           â”‚
+        â””â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”¬â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+              â”‚            â”‚
+        â”Œâ”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+        â”‚ Dashboard â”‚ â”‚ Workflow Engine  â”‚
+        â”‚ (Frontend)â”‚ â”‚ â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”‚
+        â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚ â”‚ Planner      â”‚ â”‚
+                      â”‚ â”‚ Dispatcher   â”‚ â”‚
+              â”Œâ”€â”€â”€â”€â”€â”€â”€â”¤ â”‚ Executor     â”‚ â”‚
+              â”‚       â”‚ â”‚ Artifacts    â”‚ â”‚
+        â”Œâ”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â” â”‚ â”‚ Cache        â”‚ â”‚
+        â”‚ AI Runtimeâ”‚ â”‚ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚
+        â”‚ â”Œâ”€â”€â”€â”€â”€â”€â”€â” â”‚ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+        â”‚ â”‚Models â”‚ â”‚
+        â”‚ â”‚Router â”‚ â”‚
+        â”‚ â”‚Tools  â”‚ â”‚
+        â”‚ â”‚Memory â”‚ â”‚
+        â”‚ â””â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚
+        â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ---
@@ -595,7 +595,7 @@ The system is declared `OPERATIONAL` when:
 | Metric | Target | Measurement |
 |---|---|---|
 | Installer execution | <60s | From double-click to completion |
-| Master cold start | <3s | From `AIClusterMaster.exe` to `Uvicorn running` |
+| Master cold start | <3s | From `AIClusterRuntime.exe --mode master` to `Uvicorn running` |
 | Database init | <500ms | Table creation on empty DB |
 | Scheduler ready | <100ms | From `start()` to first queue poll |
 | AI Runtime init | <2s | Model registry + provider validation |
@@ -607,4 +607,4 @@ The system is declared `OPERATIONAL` when:
 
 ---
 
-*End of STARTUP_SEQUENCE.md — This document covers the complete boot timeline from installer to system-ready for the AICluster distributed compute platform.*
+*End of STARTUP_SEQUENCE.md â€” This document covers the complete boot timeline from installer to system-ready for the AICluster distributed compute platform.*

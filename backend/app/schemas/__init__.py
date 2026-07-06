@@ -21,6 +21,7 @@ class HeartbeatRequest(BaseModel):
     temperature: Optional[float] = None
     busy: bool = False
     network_speed: float = 0.0
+    version: Optional[str] = None
 
 
 class WorkerResponse(BaseModel):
@@ -48,13 +49,20 @@ class WorkerResponse(BaseModel):
 
 class DashboardResponse(BaseModel):
     total_workers: int
+    online_workers: int
     online: int
     offline: int
     idle: int
     busy: int
     average_cpu: float
     average_ram: float
+    active_jobs: int
+    queued_jobs: int
+    queue_depth: int
     running_jobs: int
+    repositories: int = 0
+    plugins: int = 0
+    workflows: int = 0
 
 
 class JobCreateRequest(BaseModel):
@@ -85,6 +93,16 @@ class HealthResponse(BaseModel):
     version: str
 
 
+class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    username: str
+    email: str = ""
+    role: str
+    is_active: bool
+    created_at: datetime
+
+
 class LoginRequest(BaseModel):
     username: str = Field(..., min_length=1, max_length=50)
     password: str = Field(..., min_length=1)
@@ -93,6 +111,7 @@ class LoginRequest(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
+    user: UserResponse
 
 
 class SystemLogResponse(BaseModel):

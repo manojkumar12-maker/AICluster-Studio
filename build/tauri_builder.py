@@ -60,9 +60,9 @@ serde = {{ version = "1", features = ["derive"] }}
 serde_json = "1"
 """
 
-BUILD_RS = """fn main() {{
+BUILD_RS = """fn main() {
     tauri_build::build()
-}}
+}
 """
 
 MAIN_RS = """fn main() {{
