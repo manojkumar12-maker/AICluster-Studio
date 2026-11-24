@@ -22,4 +22,9 @@ export default function SettingsPage() {
         </div>
         <div className="rounded-lg border p-4">
           <div className="flex items-center gap-2 mb-2"><Settings className="h-4 w-4" /><h3 className="font-medium">Preferences</h3></div>
-          <p className="text-sm text-muted-foreground">Dashboard
+          <p className="text-sm text-muted-foreground">Dashboard preferences such as theme, refresh interval and notification settings.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
