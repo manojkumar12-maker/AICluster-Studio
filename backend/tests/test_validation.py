@@ -164,9 +164,7 @@ async def test_dashboard_health_endpoints(client):
 async def test_root_and_docs(client):
     root = await client.get("/")
     assert root.status_code == 200
-    rdata = root.json()
-    assert "app" in rdata
-    assert "version" in rdata
+    assert "text/html" in root.headers["content-type"]
 
     docs = await client.get("/docs")
     assert docs.status_code == 200

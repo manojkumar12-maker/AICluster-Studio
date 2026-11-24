@@ -41,6 +41,13 @@ class Registrar:
                 logger.error(
                     f"Registration failed: {response.status_code} {response.text}"
                 )
+                if response.status_code == 401 and not settings.worker_secret:
+                    logger.error(
+                        "The master requires a shared secret. Set AICLUSTER_MASTER_SECRET "
+                        "to the master's secret (backend data/secret.key) or the "
+                        "AICLUSTER_SECRET_KEY value the master was started with, "
+                        "then restart this worker."
+                    )
         except Exception as e:
             logger.error(f"Registration error: {e}")
 
