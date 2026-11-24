@@ -11,7 +11,7 @@
 [![Tests](https://img.shields.io/badge/Tests-76%20passing-green?style=flat)](backend/tests/)
 [![Python](https://img.shields.io/badge/Python-3.12%2B-blue?style=flat&logo=python&logoColor=white)](https://python.org)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat&logo=next.js&logoColor=white)](https://nextjs.org)
-[![Windows](https://img.shields.io/badge/Windows-10%2F11-blue?style=flat&logo=windows&logoColor=white)](INSTALLATION.md)
+[![Windows](https://img.shields.io/badge/Windows-10%2F11-blue?style=flat&logo=windows&logoColor=white)](docs/INSTALLATION.md)
 
 </div>
 
