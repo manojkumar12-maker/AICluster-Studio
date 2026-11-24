@@ -1,6 +1,6 @@
 [package]
 name = "studio"
-version = "2.0.0"
+version = "2.0.1"
 description = "AICluster Studio - Application Lifecycle Manager & Desktop IDE"
 authors = ["AICluster"]
 edition = "2021"

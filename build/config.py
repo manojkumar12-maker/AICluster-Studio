@@ -83,7 +83,7 @@ class BuildConfig:
     product_name: str = "AICluster"
     company: str = "AICluster"
     copyright: str = "Copyright (c) 2026 AICluster"
-    version: str = "2.0.0"
+    version: str = "2.0.1"
     description: str = "AICluster - Native Desktop AI Cluster Platform"
     python_min_version: tuple = (3, 12)
     node_min_version: tuple = (18, 0)

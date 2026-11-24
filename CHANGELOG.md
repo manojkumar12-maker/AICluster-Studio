@@ -1,5 +1,15 @@
 ﻿# Changelog
 
+## v2.0.1 (2026-11-24)
+
+### Security & fixes (merged from master)
+- **Admin password no longer printed to stderr**: on first seed the generated password is written once to `data/admin_password.txt` (0600); logs record only the file path
+- **Actionable worker onboarding error**: worker registration 401 with no secret configured now tells the operator to set `AICLUSTER_MASTER_SECRET` from the master's `data/secret.key`
+- **Dependencies pinned** to verified working versions (fastapi 0.162.4, SQLAlchemy 2.1.8, bcrypt 4.0.1, ...); alembic dropped (unused)
+- **Frontend relative API base**: dashboard uses the `/api` rewrite instead of a hardcoded `http://localhost:8000`, so it works behind preview/production origins
+- **Two stale root-endpoint test assertions corrected** (`GET /` intentionally serves the dashboard HTML)
+- **README refreshed**: real screenshots, GIF tour, correct version badges
+
 ## v2.0.0 (2026-07-06)
 
 ### Architecture

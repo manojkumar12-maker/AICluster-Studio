@@ -8,7 +8,7 @@ async def test_health_check(client):
     data = response.json()
     assert data["status"] == "ok"
     assert data["database"] == "connected"
-    assert data["version"] == "1.0.0"
+    assert data["version"] == "2.0.1"
 
 
 @pytest.mark.asyncio
