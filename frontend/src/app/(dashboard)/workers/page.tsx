@@ -5,7 +5,7 @@ import { Cpu, HardDrive, Wifi, Thermometer } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import type { WorkerResponse } from "@/types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 async function fetchWorkers(token: string | null): Promise<WorkerResponse[]> {
   if (!token) throw new Error("Not authenticated");

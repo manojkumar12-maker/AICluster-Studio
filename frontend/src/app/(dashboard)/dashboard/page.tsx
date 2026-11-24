@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Cpu, HardDrive, Activity } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 interface DashboardData {
   total_workers: number;

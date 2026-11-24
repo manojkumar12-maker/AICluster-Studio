@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from pathlib import Path
@@ -38,7 +39,14 @@ async def lifespan(app: FastAPI):
         auth_service = AuthService(db)
         admin_password = await auth_service.seed_default_admin()
         if admin_password:
-            print(f"ADMIN PASSWORD: {admin_password}", file=__import__('sys').stderr)
+            cred_file = os.path.join(settings.data_dir, "admin_password.txt")
+            fd = os.open(cred_file, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+            with os.fdopen(fd, "w") as f:
+                f.write(admin_password)
+            logger.warning(
+                "Default admin created; password written to %s (delete it after first login)",
+                cred_file,
+            )
         break
 
     async def check_offline_workers():
