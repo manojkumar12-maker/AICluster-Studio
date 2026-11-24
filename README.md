@@ -2,11 +2,11 @@
 
 <img src="assets/screenshots/tour.gif" alt="AICluster dashboard tour" width="860"/>
 
-# 🚀 AICluster v1.3.1
+# 🚀 AICluster v2.0.1
 
 **Offline-first AI cluster management platform for distributed computing across Windows machines**
 
-[![Version](https://img.shields.io/badge/Version-1.3.1-blue?style=flat&logo=github&color=blue)](https://github.com/manojkumar12-maker/AICluster-Studio/releases)
+[![Version](https://img.shields.io/badge/Version-2.0.1-blue?style=flat&logo=github&color=blue)](https://github.com/manojkumar12-maker/AICluster-Studio/releases)
 [![Security](https://img.shields.io/badge/Security-Hardened-brightgreen?style=flat)](SECURITY.md)
 [![Tests](https://img.shields.io/badge/Tests-76%20passing-green?style=flat)](backend/tests/)
 [![Python](https://img.shields.io/badge/Python-3.12%2B-blue?style=flat&logo=python&logoColor=white)](https://python.org)
@@ -186,7 +186,7 @@ AICluster/
 ├── shared/                # Shared types & protocols
 ├── docs/                  # Documentation (8 guides)
 ├── dist/                  # Built executables
-├── VERSION                # 1.3.1
+├── VERSION                # 2.0.1
 └── CHANGELOG.md           # Release history
 ```
 
